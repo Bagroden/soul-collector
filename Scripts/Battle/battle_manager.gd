@@ -4293,14 +4293,22 @@ func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String) -
 	phantom.name = "PhantomEnemy"
 	phantom.sprite_frames = sprite_frames
 	phantom.z_index = 150  # Поверх игрока
-	phantom.scale = Vector2(3.6, 3.6)  # На 20% больше врагов (3.0 * 1.2 = 3.6)
-	# Призрачный эффект: голубовато-белый цвет с прозрачностью
-	phantom.modulate = Color(0.7, 0.9, 1.0, 0.65)  # Cyan-ish призрачный оттенок
+	
+	# УВЕЛИЧЕННЫЙ масштаб - на 50% больше врагов для заметности
+	phantom.scale = Vector2(4.5, 4.5)  # 3.0 * 1.5 = 4.5
+	
+	# ЯРКИЙ призрачный эффект с голубым свечением
+	phantom.modulate = Color(0.5, 0.8, 1.2, 0.75)  # Яркий голубой с увеличенным синим каналом
+	
+	# Добавляем self_modulate для дополнительного эффекта свечения
+	phantom.self_modulate = Color(1.5, 1.5, 2.0, 1.0)  # Ещё больше синего свечения
 	
 	# Позиционируем на месте игрока
 	phantom.global_position = player_node.global_position
 	
 	print("👻 Позиция призрака: %s" % str(phantom.global_position))
+	print("👻 Масштаб призрака: %s" % str(phantom.scale))
+	print("👻 Цвет призрака: %s" % str(phantom.modulate))
 	
 	# Добавляем в GameWorld
 	var game_world = get_node_or_null("GameWorld")
