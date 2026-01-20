@@ -508,7 +508,7 @@ func is_ability_learned(ability_id: String) -> bool:
 
 ## Получить список изученных способностей
 func get_learned_abilities() -> Array[String]:
-	var learned = []
+	var learned: Array[String] = []
 	for ability_id in learning_progress:
 		if learning_progress[ability_id]["is_learned"]:
 			learned.append(ability_id)
@@ -516,14 +516,14 @@ func get_learned_abilities() -> Array[String]:
 
 ## Получить список всех способностей
 func get_all_abilities() -> Array[String]:
-	var abilities = []
+	var abilities: Array[String] = []
 	for ability_id in learning_config:
 		abilities.append(ability_id)
 	return abilities
 
 ## Получить способности по редкости
 func get_abilities_by_rarity(rarity: String) -> Array[String]:
-	var abilities = []
+	var abilities: Array[String] = []
 	for ability_id in learning_config:
 		if learning_config[ability_id]["rarity"] == rarity:
 			abilities.append(ability_id)
