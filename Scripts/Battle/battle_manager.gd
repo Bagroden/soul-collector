@@ -4293,7 +4293,7 @@ func select_target_by_position(target_position: int):
 	var found_index = alive.find(target_enemy)
 	if found_index != -1:
 		selected_target_index = found_index
-	else:
+	
 	_show_message("Цель: " + target_enemy.display_name, 1.0)
 	if ui.has_method("highlight_selected_target_enemy"):
 		ui.highlight_selected_target_enemy(selected_target_enemy)
