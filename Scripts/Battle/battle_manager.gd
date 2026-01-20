@@ -4210,6 +4210,9 @@ func _calculate_learned_ability_damage(ability: EnemyAbility, caster: Node2D) ->
 func _play_phantom_enemy_animation(ability_id: String, ability_name: String) -> void:
 	"""Создаёт призрачную анимацию врага при использовании его способности"""
 	
+	print("👻 === НАЧАЛО ПРИЗРАЧНОЙ ТРАНСФОРМАЦИИ ===")
+	print("👻 Способность: %s (%s)" % [ability_name, ability_id])
+	
 	# Маппинг способностей на спрайты врагов
 	var enemy_sprite_paths = {
 		"rat_bite": "res://Assets/Sprites/Enemies/Rat/Rat_SpriteFrames.tres",
@@ -4237,18 +4240,44 @@ func _play_phantom_enemy_animation(ability_id: String, ability_name: String) -> 
 	
 	var sprite_path = enemy_sprite_paths.get(ability_id, "")
 	if sprite_path == "":
-		return  # Нет маппинга для этой способности
+		print("⚠️ Нет маппинга для способности: %s" % ability_id)
+		return
+	
+	print("👻 Путь к спрайтам: %s" % sprite_path)
 	
 	# Проверяем существование файла
 	if not ResourceLoader.exists(sprite_path):
-		print("⚠️ Спрайты для '%s' не найдены: %s" % [ability_name, sprite_path])
+		print("⚠️ Файл не существует: %s" % sprite_path)
+		print("👻 Пробуем найти спрайты врагов в сцене...")
+		
+		# Пытаемся взять спрайты с текущего врага
+		if enemy_nodes.size() > 0:
+			var first_enemy = enemy_nodes[0]
+			var enemy_visual = first_enemy.get_node_or_null("Visual")
+			if enemy_visual and enemy_visual.sprite_frames:
+				print("👻 Используем спрайты текущего врага")
+				sprite_path = ""  # Используем напрямую
+				var sprite_frames = enemy_visual.sprite_frames
+				_create_phantom_sprite(sprite_frames, ability_name)
+				return
+		
+		print("⚠️ Не удалось найти спрайты для '%s'" % ability_name)
 		return
 	
 	# Загружаем SpriteFrames
+	print("👻 Загружаем спрайты...")
 	var sprite_frames = load(sprite_path)
 	if not sprite_frames:
-		print("⚠️ Не удалось загрузить спрайты для '%s'" % ability_name)
+		print("⚠️ Не удалось загрузить спрайты")
 		return
+	
+	print("👻 Спрайты загружены успешно")
+	_create_phantom_sprite(sprite_frames, ability_name)
+
+func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String) -> void:
+	"""Создаёт и проигрывает призрачный спрайт"""
+	
+	print("👻 Создаём призрачный спрайт...")
 	
 	# Создаём призрачный спрайт
 	var phantom = AnimatedSprite2D.new()
@@ -4261,27 +4290,51 @@ func _play_phantom_enemy_animation(ability_id: String, ability_name: String) -> 
 	# Позиционируем над игроком
 	phantom.global_position = player_node.global_position
 	
+	print("👻 Позиция призрака: %s" % str(phantom.global_position))
+	print("👻 Позиция игрока: %s" % str(player_node.global_position))
+	
 	# Добавляем в GameWorld
 	var game_world = get_node_or_null("GameWorld")
 	if game_world:
 		game_world.add_child(phantom)
+		print("👻 Призрак добавлен в GameWorld")
 	else:
 		add_child(phantom)
+		print("👻 Призрак добавлен в battle_manager")
+	
+	# Проверяем доступные анимации
+	print("👻 Доступные анимации:")
+	var animations = sprite_frames.get_animation_names()
+	for anim_name in animations:
+		print("  - %s" % anim_name)
 	
 	# Проигрываем анимацию атаки
-	if phantom.sprite_frames.has_animation("attack"):
+	if sprite_frames.has_animation("attack"):
+		print("👻 Проигрываем анимацию 'attack'")
 		phantom.play("attack")
 		
 		# Ждём завершения анимации
 		await phantom.animation_finished
+		print("👻 Анимация 'attack' завершена")
+	elif sprite_frames.has_animation("Attack"):
+		print("👻 Проигрываем анимацию 'Attack'")
+		phantom.play("Attack")
+		await phantom.animation_finished
+		print("👻 Анимация 'Attack' завершена")
 	else:
-		# Fallback - просто короткая задержка
-		await get_tree().create_timer(0.5).timeout
+		print("⚠️ Анимация 'attack' не найдена, используем первую доступную или задержку")
+		if animations.size() > 0:
+			var first_anim = animations[0]
+			print("👻 Проигрываем первую анимацию: %s" % first_anim)
+			phantom.play(first_anim)
+			await get_tree().create_timer(0.5).timeout
+		else:
+			await get_tree().create_timer(0.5).timeout
 	
 	# Удаляем призрак
 	phantom.queue_free()
-	
-	print("👻 Призрачная анимация '%s' завершена" % ability_name)
+	print("👻 Призрак удалён")
+	print("👻 === КОНЕЦ ПРИЗРАЧНОЙ ТРАНСФОРМАЦИИ ===")
 
 func _show_defeat_screen():
 	"""Показывает экран поражения"""
