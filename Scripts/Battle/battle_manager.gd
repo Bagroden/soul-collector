@@ -4257,7 +4257,7 @@ func _play_phantom_enemy_animation(ability_id: String, ability_name: String) -> 
 		print("⚠️ Не удалось загрузить сцену")
 		return
 	
-	# Создаём временный экземпляр врага для получения спрайтов
+	# Создаём временный экземпляр врага для получения спрайтов И scale
 	var temp_enemy = enemy_scene.instantiate()
 	var enemy_visual = temp_enemy.get_node_or_null("Visual")
 	
@@ -4269,13 +4269,17 @@ func _play_phantom_enemy_animation(ability_id: String, ability_name: String) -> 
 	print("👻 Спрайты получены из сцены врага")
 	var sprite_frames = enemy_visual.sprite_frames
 	
+	# ВАЖНО: Получаем scale визуального компонента врага
+	var enemy_visual_scale = enemy_visual.scale
+	print("👻 Scale Visual компонента врага: %s" % str(enemy_visual_scale))
+	
 	# Удаляем временный экземпляр
 	temp_enemy.queue_free()
 	
-	# Создаём призрачный спрайт
-	_create_phantom_sprite(sprite_frames, ability_name)
+	# Создаём призрачный спрайт с правильным масштабом
+	_create_phantom_sprite(sprite_frames, ability_name, enemy_visual_scale)
 
-func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String) -> void:
+func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String, enemy_visual_scale: Vector2 = Vector2(1, 1)) -> void:
 	"""Создаёт и проигрывает призрачный спрайт"""
 	
 	print("👻 Создаём призрачный спрайт...")
@@ -4294,8 +4298,15 @@ func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String) -
 	phantom.sprite_frames = sprite_frames
 	phantom.z_index = 150  # Поверх игрока
 	
-	# УВЕЛИЧЕННЫЙ масштаб - на 50% больше врагов для заметности
-	phantom.scale = Vector2(4.5, 4.5)  # 3.0 * 1.5 = 4.5
+	# ПРАВИЛЬНЫЙ масштаб на основе врага + враги в бою умножаются на 3.0 + увеличиваем на 20%
+	# enemy_visual_scale - это scale из Visual компонента врага
+	# 3.0 - это scale который применяется при спавне врага в battle_manager
+	# 1.2 - увеличиваем на 20% для эффекта
+	var base_scale = enemy_visual_scale * 3.0 * 1.2
+	phantom.scale = base_scale
+	
+	print("👻 Scale Visual врага: %s" % str(enemy_visual_scale))
+	print("👻 Итоговый масштаб призрака: %s (враг_scale * 3.0 * 1.2)" % str(phantom.scale))
 	
 	# ЯРКИЙ призрачный эффект с голубым свечением
 	phantom.modulate = Color(0.5, 0.8, 1.2, 0.75)  # Яркий голубой с увеличенным синим каналом
@@ -4307,7 +4318,6 @@ func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String) -
 	phantom.global_position = player_node.global_position
 	
 	print("👻 Позиция призрака: %s" % str(phantom.global_position))
-	print("👻 Масштаб призрака: %s" % str(phantom.scale))
 	print("👻 Цвет призрака: %s" % str(phantom.modulate))
 	
 	# Добавляем в GameWorld
