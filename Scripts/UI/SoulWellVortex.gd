@@ -316,6 +316,7 @@ func _update_target_particle_count() -> void:
 		var soul_shards_manager = get_node("/root/SoulShard")
 		soul_shards = soul_shards_manager.get_soul_shards()
 	else:
+		pass
 	
 	# Определяем количество частиц по таблице
 	target_particle_count = 0
