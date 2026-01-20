@@ -4213,65 +4213,66 @@ func _play_phantom_enemy_animation(ability_id: String, ability_name: String) -> 
 	print("👻 === НАЧАЛО ПРИЗРАЧНОЙ ТРАНСФОРМАЦИИ ===")
 	print("👻 Способность: %s (%s)" % [ability_name, ability_id])
 	
-	# Маппинг способностей на спрайты врагов
-	var enemy_sprite_paths = {
-		"rat_bite": "res://Assets/Sprites/Enemies/Rat/Rat_SpriteFrames.tres",
-		"bat_swoop": "res://Assets/Sprites/Enemies/Bat/Bat_SpriteFrames.tres",
-		"slime_acid_blast": "res://Assets/Sprites/Enemies/Slime/Slime_SpriteFrames.tres",
-		"rotten_slime_blast": "res://Assets/Sprites/Enemies/RottenSlime/RottenSlime_SpriteFrames.tres",
-		"double_strike": "res://Assets/Sprites/Enemies/Goblin/Goblin_SpriteFrames.tres",
-		"poison_strike": "res://Assets/Sprites/Enemies/Goblin/Goblin_SpriteFrames.tres",
-		"magic_arrows": "res://Assets/Sprites/Enemies/Goblin/Goblin_SpriteFrames.tres",
-		"crossbow_shot": "res://Assets/Sprites/Enemies/Skeleton/Skeleton_SpriteFrames.tres",
-		"slashing_strike": "res://Assets/Sprites/Enemies/Skeleton/Skeleton_SpriteFrames.tres",
-		"tombstone": "res://Assets/Sprites/Enemies/Ghoul/Ghoul_SpriteFrames.tres",
-		"crushing_hammer": "res://Assets/Sprites/Enemies/Skeleton/Skeleton_SpriteFrames.tres",
-		"orc_arrow_shot": "res://Assets/Sprites/Enemies/Orc/Orc_SpriteFrames.tres",
-		"orc_backstab": "res://Assets/Sprites/Enemies/Orc/Orc_SpriteFrames.tres",
-		"orc_berserker_strike": "res://Assets/Sprites/Enemies/Orc/Orc_SpriteFrames.tres",
-		"orc_spirit_blast": "res://Assets/Sprites/Enemies/Orc/Orc_SpriteFrames.tres",
-		"shadow_spikes": "res://Assets/Sprites/Enemies/DarkStalker/DarkStalker_SpriteFrames.tres",
-		"alkara_dark_blast": "res://Assets/Sprites/Enemies/Demon/Demon_SpriteFrames.tres",
-		"curse_blast": "res://Assets/Sprites/Enemies/Demon/Demon_SpriteFrames.tres",
-		"executioner_strike": "res://Assets/Sprites/Enemies/Demon/Demon_SpriteFrames.tres",
-		"tharnok_crushing_strike": "res://Assets/Sprites/Enemies/Demon/Demon_SpriteFrames.tres",
-		"armor_strike": "res://Assets/Sprites/Enemies/SkeletonLord/SkeletonLord_SpriteFrames.tres"
+	# Маппинг способностей на СЦЕНЫ врагов (из них берём спрайты)
+	var enemy_scene_paths = {
+		"rat_bite": "res://Scenes/Battle/Enemy_Rat.tscn",
+		"bat_swoop": "res://Scenes/Battle/Enemy_Bat.tscn",
+		"slime_acid_blast": "res://Scenes/Battle/Enemy_Slime.tscn",
+		"rotten_slime_blast": "res://Scenes/Battle/Enemy_RottenSlime.tscn",
+		"double_strike": "res://Scenes/Battle/Enemy_GoblinWarrior.tscn",
+		"poison_strike": "res://Scenes/Battle/Enemy_GoblinThief.tscn",
+		"magic_arrows": "res://Scenes/Battle/Enemy_GoblinMage.tscn",
+		"crossbow_shot": "res://Scenes/Battle/Enemy_SkeletonCrossbowman.tscn",
+		"slashing_strike": "res://Scenes/Battle/Enemy_SkeletonSwordsman.tscn",
+		"tombstone": "res://Scenes/Battle/Enemy_Ghoul.tscn",
+		"crushing_hammer": "res://Scenes/Battle/Enemy_EliteSkeleton.tscn",
+		"orc_arrow_shot": "res://Scenes/Battle/Enemy_OrcArcher.tscn",
+		"orc_backstab": "res://Scenes/Battle/Enemy_OrcAssassin.tscn",
+		"orc_berserker_strike": "res://Scenes/Battle/Enemy_OrcBerserker.tscn",
+		"orc_spirit_blast": "res://Scenes/Battle/Enemy_OrcShaman.tscn",
+		"shadow_spikes": "res://Scenes/Battle/Enemy_DarkStalker.tscn",
+		"alkara_dark_blast": "res://Scenes/Battle/Enemy_AlkaraDemon.tscn",
+		"curse_blast": "res://Scenes/Battle/Enemy_CurseDemon.tscn",
+		"executioner_strike": "res://Scenes/Battle/Enemy_ExecutionerDemon.tscn",
+		"tharnok_crushing_strike": "res://Scenes/Battle/Enemy_TharnokDemon.tscn",
+		"armor_strike": "res://Scenes/Battle/Enemy_SkeletonLord.tscn"
 	}
 	
-	var sprite_path = enemy_sprite_paths.get(ability_id, "")
-	if sprite_path == "":
+	var scene_path = enemy_scene_paths.get(ability_id, "")
+	if scene_path == "":
 		print("⚠️ Нет маппинга для способности: %s" % ability_id)
 		return
 	
-	print("👻 Путь к спрайтам: %s" % sprite_path)
+	print("👻 Путь к сцене врага: %s" % scene_path)
 	
 	# Проверяем существование файла
-	if not ResourceLoader.exists(sprite_path):
-		print("⚠️ Файл не существует: %s" % sprite_path)
-		print("👻 Пробуем найти спрайты врагов в сцене...")
-		
-		# Пытаемся взять спрайты с текущего врага
-		if enemy_nodes.size() > 0:
-			var first_enemy = enemy_nodes[0]
-			var enemy_visual = first_enemy.get_node_or_null("Visual")
-			if enemy_visual and enemy_visual.sprite_frames:
-				print("👻 Используем спрайты текущего врага")
-				sprite_path = ""  # Используем напрямую
-				var sprite_frames = enemy_visual.sprite_frames
-				_create_phantom_sprite(sprite_frames, ability_name)
-				return
-		
-		print("⚠️ Не удалось найти спрайты для '%s'" % ability_name)
+	if not ResourceLoader.exists(scene_path):
+		print("⚠️ Сцена не существует: %s" % scene_path)
 		return
 	
-	# Загружаем SpriteFrames
-	print("👻 Загружаем спрайты...")
-	var sprite_frames = load(sprite_path)
-	if not sprite_frames:
-		print("⚠️ Не удалось загрузить спрайты")
+	# Загружаем сцену врага
+	print("👻 Загружаем сцену врага...")
+	var enemy_scene: PackedScene = load(scene_path)
+	if not enemy_scene:
+		print("⚠️ Не удалось загрузить сцену")
 		return
 	
-	print("👻 Спрайты загружены успешно")
+	# Создаём временный экземпляр врага для получения спрайтов
+	var temp_enemy = enemy_scene.instantiate()
+	var enemy_visual = temp_enemy.get_node_or_null("Visual")
+	
+	if not enemy_visual or not enemy_visual.sprite_frames:
+		print("⚠️ Visual или sprite_frames не найдены в сцене врага")
+		temp_enemy.queue_free()
+		return
+	
+	print("👻 Спрайты получены из сцены врага")
+	var sprite_frames = enemy_visual.sprite_frames
+	
+	# Удаляем временный экземпляр
+	temp_enemy.queue_free()
+	
+	# Создаём призрачный спрайт
 	_create_phantom_sprite(sprite_frames, ability_name)
 
 func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String) -> void:
@@ -4279,19 +4280,26 @@ func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String) -
 	
 	print("👻 Создаём призрачный спрайт...")
 	
+	# СКРЫВАЕМ ИГРОКА НА ВРЕМЯ ТРАНСФОРМАЦИИ
+	var player_visual = player_node.get_node_or_null("Visual")
+	var player_was_visible = true
+	if player_visual:
+		player_was_visible = player_visual.visible
+		player_visual.visible = false
+		print("👻 Визуал игрока скрыт")
+	
 	# Создаём призрачный спрайт
 	var phantom = AnimatedSprite2D.new()
 	phantom.name = "PhantomEnemy"
 	phantom.sprite_frames = sprite_frames
 	phantom.z_index = 150  # Поверх игрока
 	phantom.scale = Vector2(3.0, 3.0)  # Такой же размер как враги
-	phantom.modulate = Color(1, 1, 1, 0.6)  # Полупрозрачный
+	phantom.modulate = Color(1, 1, 1, 0.7)  # Полупрозрачный (немного ярче)
 	
-	# Позиционируем над игроком
+	# Позиционируем на месте игрока
 	phantom.global_position = player_node.global_position
 	
 	print("👻 Позиция призрака: %s" % str(phantom.global_position))
-	print("👻 Позиция игрока: %s" % str(player_node.global_position))
 	
 	# Добавляем в GameWorld
 	var game_world = get_node_or_null("GameWorld")
@@ -4334,6 +4342,12 @@ func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String) -
 	# Удаляем призрак
 	phantom.queue_free()
 	print("👻 Призрак удалён")
+	
+	# ПОКАЗЫВАЕМ ИГРОКА ОБРАТНО
+	if player_visual and player_was_visible:
+		player_visual.visible = true
+		print("👻 Визуал игрока восстановлен")
+	
 	print("👻 === КОНЕЦ ПРИЗРАЧНОЙ ТРАНСФОРМАЦИИ ===")
 
 func _show_defeat_screen():
