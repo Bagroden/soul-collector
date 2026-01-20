@@ -25,7 +25,6 @@ func spawn_random_enemy(force_elite: bool = false, enemy_index: int = 0) -> Node
 	"""
 	var enemy_scene_path = ""
 	var rarity = "common"
-	var is_boss = false
 	
 	# Проверяем, есть ли генератор комнат
 	var room_generator = get_node_or_null("/root/RoomGenerator")
@@ -35,7 +34,6 @@ func spawn_random_enemy(force_elite: bool = false, enemy_index: int = 0) -> Node
 		
 		# Проверяем, является ли это босс-комнатой
 		if current_room and current_room.room_type == RoomData.RoomType.BOSS:
-			is_boss = true
 			# Для боссов используем заданную сцену и редкость
 			if current_room.enemy_scene != "":
 				enemy_scene_path = current_room.enemy_scene

@@ -79,11 +79,11 @@ func _get_animation_name_for_ability(ability_id: String) -> String:
 	var parent = get_parent()
 	if parent:
 		# Ищем как брата (оба дочерние узлы одного родителя)
-		var animation_manager = parent.get_node_or_null("AbilityAnimationManager")
-		if animation_manager and animation_manager.has_method("get_animation_for_ability"):
+		var anim_mgr = parent.get_node_or_null("AbilityAnimationManager")
+		if anim_mgr and anim_mgr.has_method("get_animation_for_ability"):
 			# Сохраняем ссылку для будущих вызовов
-			ability_animation_manager = animation_manager
-			return animation_manager.get_animation_for_ability(ability_id)
+			ability_animation_manager = anim_mgr
+			return anim_mgr.get_animation_for_ability(ability_id)
 		else:
 			# Если не найден как брат, пробуем найти через get_tree()
 			var scene_root = get_tree().current_scene
