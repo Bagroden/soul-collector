@@ -4043,6 +4043,9 @@ func _use_learned_ability(ability_id: String, slot_index: int):
 	# Тратим очко действий
 	player_node.spend_action_point()
 	
+	# Создаем призрачную анимацию врага (трансформация игрока)
+	await _play_phantom_enemy_animation(ability_id, ability.name)
+	
 	# Вычисляем урон на основе формулы способности врага
 	var damage = _calculate_learned_ability_damage(ability, player_node)
 	
@@ -4203,6 +4206,82 @@ func _calculate_learned_ability_damage(ability: EnemyAbility, caster: Node2D) ->
 			base_damage = caster.strength + caster.intelligence
 	
 	return max(base_damage, 1)  # Минимум 1 урон
+
+func _play_phantom_enemy_animation(ability_id: String, ability_name: String) -> void:
+	"""Создаёт призрачную анимацию врага при использовании его способности"""
+	
+	# Маппинг способностей на спрайты врагов
+	var enemy_sprite_paths = {
+		"rat_bite": "res://Assets/Sprites/Enemies/Rat/Rat_SpriteFrames.tres",
+		"bat_swoop": "res://Assets/Sprites/Enemies/Bat/Bat_SpriteFrames.tres",
+		"slime_acid_blast": "res://Assets/Sprites/Enemies/Slime/Slime_SpriteFrames.tres",
+		"rotten_slime_blast": "res://Assets/Sprites/Enemies/RottenSlime/RottenSlime_SpriteFrames.tres",
+		"double_strike": "res://Assets/Sprites/Enemies/Goblin/Goblin_SpriteFrames.tres",
+		"poison_strike": "res://Assets/Sprites/Enemies/Goblin/Goblin_SpriteFrames.tres",
+		"magic_arrows": "res://Assets/Sprites/Enemies/Goblin/Goblin_SpriteFrames.tres",
+		"crossbow_shot": "res://Assets/Sprites/Enemies/Skeleton/Skeleton_SpriteFrames.tres",
+		"slashing_strike": "res://Assets/Sprites/Enemies/Skeleton/Skeleton_SpriteFrames.tres",
+		"tombstone": "res://Assets/Sprites/Enemies/Ghoul/Ghoul_SpriteFrames.tres",
+		"crushing_hammer": "res://Assets/Sprites/Enemies/Skeleton/Skeleton_SpriteFrames.tres",
+		"orc_arrow_shot": "res://Assets/Sprites/Enemies/Orc/Orc_SpriteFrames.tres",
+		"orc_backstab": "res://Assets/Sprites/Enemies/Orc/Orc_SpriteFrames.tres",
+		"orc_berserker_strike": "res://Assets/Sprites/Enemies/Orc/Orc_SpriteFrames.tres",
+		"orc_spirit_blast": "res://Assets/Sprites/Enemies/Orc/Orc_SpriteFrames.tres",
+		"shadow_spikes": "res://Assets/Sprites/Enemies/DarkStalker/DarkStalker_SpriteFrames.tres",
+		"alkara_dark_blast": "res://Assets/Sprites/Enemies/Demon/Demon_SpriteFrames.tres",
+		"curse_blast": "res://Assets/Sprites/Enemies/Demon/Demon_SpriteFrames.tres",
+		"executioner_strike": "res://Assets/Sprites/Enemies/Demon/Demon_SpriteFrames.tres",
+		"tharnok_crushing_strike": "res://Assets/Sprites/Enemies/Demon/Demon_SpriteFrames.tres",
+		"armor_strike": "res://Assets/Sprites/Enemies/SkeletonLord/SkeletonLord_SpriteFrames.tres"
+	}
+	
+	var sprite_path = enemy_sprite_paths.get(ability_id, "")
+	if sprite_path == "":
+		return  # Нет маппинга для этой способности
+	
+	# Проверяем существование файла
+	if not ResourceLoader.exists(sprite_path):
+		print("⚠️ Спрайты для '%s' не найдены: %s" % [ability_name, sprite_path])
+		return
+	
+	# Загружаем SpriteFrames
+	var sprite_frames = load(sprite_path)
+	if not sprite_frames:
+		print("⚠️ Не удалось загрузить спрайты для '%s'" % ability_name)
+		return
+	
+	# Создаём призрачный спрайт
+	var phantom = AnimatedSprite2D.new()
+	phantom.name = "PhantomEnemy"
+	phantom.sprite_frames = sprite_frames
+	phantom.z_index = 150  # Поверх игрока
+	phantom.scale = Vector2(3.0, 3.0)  # Такой же размер как враги
+	phantom.modulate = Color(1, 1, 1, 0.6)  # Полупрозрачный
+	
+	# Позиционируем над игроком
+	phantom.global_position = player_node.global_position
+	
+	# Добавляем в GameWorld
+	var game_world = get_node_or_null("GameWorld")
+	if game_world:
+		game_world.add_child(phantom)
+	else:
+		add_child(phantom)
+	
+	# Проигрываем анимацию атаки
+	if phantom.sprite_frames.has_animation("attack"):
+		phantom.play("attack")
+		
+		# Ждём завершения анимации
+		await phantom.animation_finished
+	else:
+		# Fallback - просто короткая задержка
+		await get_tree().create_timer(0.5).timeout
+	
+	# Удаляем призрак
+	phantom.queue_free()
+	
+	print("👻 Призрачная анимация '%s' завершена" % ability_name)
 
 func _show_defeat_screen():
 	"""Показывает экран поражения"""
