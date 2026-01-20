@@ -4047,7 +4047,7 @@ func _use_learned_ability(ability_id: String, slot_index: int):
 	var damage = _calculate_learned_ability_damage(ability, player_node)
 	
 	# Проверяем крит
-	var is_crit = _check_crit(player_node, ability.crit_chance_bonus)
+	var is_crit = player_node.is_critical_hit()
 	if is_crit:
 		damage = int(damage * 1.5)  # Критический урон x1.5
 	
@@ -4065,10 +4065,8 @@ func _use_learned_ability(ability_id: String, slot_index: int):
 		# Проигрываем анимацию способности
 		if ability_effect_manager:
 			ability_effect_manager.play_ability_effect_on_target(
-				ability_id,
-				player_node,
 				target,
-				ability.damage_type
+				ability_id
 			)
 	
 	# Устанавливаем кулдаун
@@ -4078,10 +4076,17 @@ func _use_learned_ability(ability_id: String, slot_index: int):
 	# Обновляем UI слотов
 	_update_ability_slots_ui()
 	
-	# Проверяем смерть врага
+	# Проверяем смерть врага и победу
 	if target.hp <= 0:
-		await _handle_enemy_death(target)
-		if _check_all_enemies_defeated():
+		# Враг умер, проверяем всех врагов
+		var all_dead = true
+		for enemy in enemy_nodes:
+			if is_instance_valid(enemy) and enemy.hp > 0:
+				all_dead = false
+				break
+		
+		if all_dead:
+			_handle_victory()
 			return
 	
 	# Переходим к ходу врага
