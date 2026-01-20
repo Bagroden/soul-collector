@@ -604,17 +604,13 @@ level = 8
 max_hp = 300
 hp = 300
 attack_power = 35
+defense = 15
 rarity = "boss"
 strength = 28
 agility = 12
 vitality = 25
 endurance = 22
-intelligence = 10
 wisdom = 8
-defense = 15
-active_ability = "armor_strike"
-passive_abilities = []
-ability_levels = {}
 
 [node name="Visual" type="AnimatedSprite2D" parent="."]
 modulate = Color(0.7, 0.7, 0.75, 1)

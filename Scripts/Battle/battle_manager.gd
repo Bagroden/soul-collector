@@ -2791,9 +2791,12 @@ func _save_battle_result() -> Array:
 		if enemy_nodes.size() > 0:
 			enemy_nodes[0] = dead_enemy
 		
-		# Добавляем прогресс изучения способностей от этого врага
+		# Добавляем прогресс изучения пассивных способностей от этого врага
 		var enemy_progress = await _add_ability_learning_progress()
 		progress_gained.append_array(enemy_progress)
+		
+		# Добавляем прогресс изучения активных способностей от этого врага
+		_add_active_ability_learning_progress()
 		
 		# Восстанавливаем
 		if old_enemy and enemy_nodes.size() > 0:
@@ -2880,6 +2883,88 @@ func _add_ability_learning_progress() -> Array:
 		progress_gained = ability_learning_system.add_progress(enemy_type, enemy_rarity)
 	
 	return progress_gained
+
+func _add_active_ability_learning_progress() -> void:
+	"""Добавляет прогресс изучения активных способностей после победы над врагом"""
+	var active_ability_system = get_node_or_null("/root/ActiveAbilityLearningSystem")
+	
+	if not active_ability_system:
+		print("ActiveAbilityLearningSystem не найден!")
+		return
+	
+	if not enemy_node:
+		return
+	
+	# Маппинг типов врагов на enemy_type в конфигурации
+	var enemy_type_map = {
+		"rat": "rat",
+		"крыса": "rat",
+		"слизень": "slime",
+		"slime": "slime",
+		"гнилой слизень": "rotten_slime",
+		"rotten slime": "rotten_slime",
+		"летучая мышь": "bat",
+		"bat": "bat",
+		"гоблин воин": "goblin_warrior",
+		"goblin warrior": "goblin_warrior",
+		"гоблин вор": "goblin_thief",
+		"goblin thief": "goblin_thief",
+		"гоблин колдун": "goblin_mage",
+		"goblin mage": "goblin_mage",
+		"скелет арбалетчик": "skeleton_crossbowman",
+		"skeleton crossbowman": "skeleton_crossbowman",
+		"скелет мечник": "skeleton_swordsman",
+		"skeleton swordsman": "skeleton_swordsman",
+		"гуль": "ghoul",
+		"ghoul": "ghoul",
+		"элитный скелет": "elite_skeleton",
+		"elite skeleton": "elite_skeleton",
+		"орк лучник": "orc_archer",
+		"orc archer": "orc_archer",
+		"орк убийца": "orc_assassin",
+		"orc assassin": "orc_assassin",
+		"орк берсерк": "orc_berserker",
+		"orc berserker": "orc_berserker",
+		"орк шаман": "orc_shaman",
+		"orc shaman": "orc_shaman",
+		"тёмный шатун": "dark_stalker",
+		"dark stalker": "dark_stalker",
+		"демон алкара": "alkara_demon",
+		"alkara demon": "alkara_demon",
+		"демон проклятия": "curse_demon",
+		"curse demon": "curse_demon",
+		"демон палач": "executioner_demon",
+		"executioner demon": "executioner_demon",
+		"демон тарнок": "tharnok_demon",
+		"tharnok demon": "tharnok_demon",
+		"скелет лорд": "skeleton_lord",
+		"skeleton lord": "skeleton_lord"
+	}
+	
+	# Определяем enemy_type по display_name или name
+	var enemy_display_name_lower = enemy_node.display_name.to_lower()
+	var enemy_name_lower = enemy_node.name.to_lower()
+	
+	var mapped_enemy_type = ""
+	
+	# Проверяем по display_name
+	if enemy_type_map.has(enemy_display_name_lower):
+		mapped_enemy_type = enemy_type_map[enemy_display_name_lower]
+	else:
+		# Проверяем по частичному совпадению
+		for key in enemy_type_map:
+			if key in enemy_display_name_lower or key in enemy_name_lower:
+				mapped_enemy_type = enemy_type_map[key]
+				break
+	
+	if mapped_enemy_type == "":
+		return
+	
+	# Получаем редкость врага
+	var enemy_rarity = enemy_node.rarity.to_lower()
+	
+	# Добавляем прогресс изучения
+	active_ability_system.add_progress(mapped_enemy_type, enemy_rarity)
 
 func use_player_ability(ability_id: String):
 	"""Использует активную способность игрока"""
