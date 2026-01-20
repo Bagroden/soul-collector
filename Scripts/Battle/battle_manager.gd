@@ -454,7 +454,6 @@ func _update_room_rarity_and_description():
 	
 	# Для босс-комнат НЕ обновляем редкость (она уже задана)
 	if current_room.room_type == RoomData.RoomType.BOSS:
-		print("DEBUG: Босс комната, не обновляем редкость (остается: ", current_room.enemy_rarity, ")")
 		return
 	
 	# Находим самого редкого врага
@@ -878,18 +877,10 @@ func player_attack():
 		return
 	
 	# Получаем текущую цель
-	print("DEBUG: Перед get_current_target(), selected_target_enemy = ", selected_target_enemy.display_name if (selected_target_enemy and is_instance_valid(selected_target_enemy)) else "null")
 	var target = get_current_target()
 	if not target:
-		print("ОШИБКА: Нет доступных целей для атаки!")
 		_show_message("Нет доступных целей!", 1.0)
 		return
-	
-	# Отладочный вывод для проверки правильности выбранной цели
-	print("DEBUG: Атака по врагу: ", target.display_name, " (уровень: ", target.level, ")")
-	print("DEBUG: Выбранный враг: ", selected_target_enemy.display_name if (selected_target_enemy and is_instance_valid(selected_target_enemy)) else "null", " (уровень: ", selected_target_enemy.level if (selected_target_enemy and is_instance_valid(selected_target_enemy)) else "N/A", ")")
-	if target != selected_target_enemy:
-		print("ERROR: Цель атаки не совпадает с выбранным врагом!")
 	
 	# Проверяем возможность удара в спину
 	var is_backstab = _check_backstab_chance(player_node)
@@ -923,7 +914,6 @@ func player_attack():
 			var damage_reduction = curse_effect.get("damage_reduction", 0.0)
 			if damage_reduction > 0:
 				damage = int(damage * (1.0 - damage_reduction))
-				print("DEBUG: Проклятие снижает урон на ", damage_reduction * 100, "%. Урон после проклятия: ", damage)
 	
 	if is_crit:
 		damage = player_node.get_crit_damage()
@@ -1187,26 +1177,13 @@ func _enemy_action():
 				
 				# Попадание успешно - проигрываем эффект способности на цели
 				var ability_id_for_effect = enemy_ability.id if enemy_ability else ""
-				print("DEBUG battle_manager: ability_id_for_effect = '", ability_id_for_effect, "'")
-				print("DEBUG battle_manager: ability_effect_manager = ", ability_effect_manager)
-				print("DEBUG battle_manager: player_node = ", player_node)
 				
 				if ability_id_for_effect != "" and ability_effect_manager:
 					# Задержка для синхронизации с анимацией атаки (момент удара)
 					await get_tree().create_timer(0.35).timeout
-					print("DEBUG battle_manager: Вызываем play_ability_effect_on_target для способности '", ability_id_for_effect, "'")
-					var effect_result = ability_effect_manager.play_ability_effect_on_target(player_node, ability_id_for_effect, Vector2.ZERO, Vector2(2, 2), 100)
-					if effect_result == null:
-						print("ОШИБКА battle_manager: play_ability_effect_on_target вернул null для способности '", ability_id_for_effect, "'")
-					else:
-						print("DEBUG battle_manager: Эффект успешно создан: ", effect_result.name)
+					ability_effect_manager.play_ability_effect_on_target(player_node, ability_id_for_effect, Vector2.ZERO, Vector2(2, 2), 100)
 					# Устанавливаем флаг, что эффект уже проигран
 					result["effect_played"] = true
-				else:
-					if ability_id_for_effect == "":
-						print("ОШИБКА battle_manager: ability_id_for_effect пустой!")
-					if not ability_effect_manager:
-						print("ОШИБКА battle_manager: ability_effect_manager не инициализирован!")
 			
 			# Сохраняем информацию о критическом ударе для логирования
 			enemy_node.last_attack_was_crit = is_crit
@@ -2020,7 +1997,6 @@ func _enemy_action():
 				if ability_id != "" and ability_effect_manager and not result.get("effect_played", false):
 					# Задержка для синхронизации с анимацией атаки (момент удара)
 					await get_tree().create_timer(0.35).timeout
-					print("DEBUG: Проигрываем эффект для способности '", ability_id, "' в блоке not special_ability_handled")
 					ability_effect_manager.play_ability_effect_on_target(player_node, ability_id, Vector2.ZERO, Vector2(2, 2), 100)
 				
 				var player_old_hp = player_node.hp
@@ -2365,7 +2341,6 @@ func _check_extra_attacks(attacker: Node, target: Node, damage_type: String):
 
 func _on_enemy_died():
 	"""Вызывается когда ОДИН враг умирает - проигрываем анимации сразу, награды только когда все мертвы"""
-	print("DEBUG: _on_enemy_died() вызван")
 	# Находим врага, который только что умер (hp <= 0 и еще не обработан)
 	var dead_enemy = null
 	for enemy in enemy_nodes:
@@ -2373,12 +2348,10 @@ func _on_enemy_died():
 			# Проверяем, не обработан ли уже этот враг
 			if not enemy.get_meta("death_processed", false):
 				dead_enemy = enemy
-				print("DEBUG: Найден мертвый враг: ", enemy.display_name, " (HP: ", enemy.hp, ")")
 				break
 	
 	# Если не нашли врага, который только что умер, проверяем, все ли враги мертвы
 	if not dead_enemy:
-		print("DEBUG: Мертвый враг не найден, проверяем всех врагов")
 		if are_all_enemies_dead():
 			_handle_victory()
 		return
@@ -2388,17 +2361,8 @@ func _on_enemy_died():
 	
 	# СРАЗУ проигрываем анимацию смерти для этого врага
 	var enemy_visual = dead_enemy.get_node_or_null("Visual")
-	print("DEBUG: Враг ", dead_enemy.display_name, " - enemy_visual: ", enemy_visual)
-	if enemy_visual:
-		print("DEBUG: enemy_visual найден, проверяем метод play_die")
-		if enemy_visual.has_method("play_die"):
-			print("DEBUG: Вызываем play_die() для ", dead_enemy.display_name)
-			enemy_visual.play_die()
-		else:
-			print("DEBUG: ОШИБКА: enemy_visual не имеет метода play_die()")
-			print("DEBUG: Методы enemy_visual: ", enemy_visual.get_method_list())
-	else:
-		print("DEBUG: ОШИБКА: enemy_visual не найден для ", dead_enemy.display_name)
+	if enemy_visual and enemy_visual.has_method("play_die"):
+		enemy_visual.play_die()
 	
 	# СРАЗУ запускаем анимацию поглощения частиц душ для этого врага
 	if soul_particle_manager and player_node:
@@ -2935,7 +2899,6 @@ func use_player_ability(ability_id: String):
 	
 	# Проверяем, не используется ли уже способность (защита от множественных нажатий)
 	if player_node.using_ability:
-		print("DEBUG: Способность уже используется, игнорируем повторное нажатие")
 		return
 	
 	# Проверяем, есть ли очки действий
@@ -2969,19 +2932,11 @@ func use_player_ability(ability_id: String):
 	player_node.using_ability = true
 	
 	# Получаем текущую цель
-	print("DEBUG: Перед get_current_target() в use_player_ability(), selected_target_enemy = ", selected_target_enemy.display_name if (selected_target_enemy and is_instance_valid(selected_target_enemy)) else "null")
 	var target = get_current_target()
 	if not target:
-		print("ОШИБКА: Нет доступных целей для способности!")
 		_show_message("Нет доступных целей!", 1.0)
 		player_node.using_ability = false
 		return
-	
-	# Отладочный вывод для проверки правильности выбранной цели
-	print("DEBUG: Использование способности по врагу: ", target.display_name, " (уровень: ", target.level, ")")
-	print("DEBUG: Выбранный враг: ", selected_target_enemy.display_name if (selected_target_enemy and is_instance_valid(selected_target_enemy)) else "null", " (уровень: ", selected_target_enemy.level if (selected_target_enemy and is_instance_valid(selected_target_enemy)) else "N/A", ")")
-	if target != selected_target_enemy:
-		print("ERROR: Цель способности не совпадает с выбранным врагом!")
 	
 	# Сохраняем количество маны до использования способности (для ancestral_wisdom)
 	var mana_before = player_node.mp if "mp" in player_node else 0
@@ -3015,7 +2970,6 @@ func use_player_ability(ability_id: String):
 				var damage_reduction = curse_effect.get("damage_reduction", 0.0)
 				if damage_reduction > 0:
 					damage = int(damage * (1.0 - damage_reduction))
-					print("DEBUG: Проклятие снижает урон способности на ", damage_reduction * 100, "%. Урон после проклятия: ", damage)
 				# Обновляем урон в результате для дальнейших обработок
 				result["damage"] = damage
 		
@@ -3059,30 +3013,22 @@ func use_player_ability(ability_id: String):
 			await get_tree().create_timer(0.4).timeout
 			
 			# Проигрываем анимацию эффекта на цели (враге)
-			# Используем SpriteFrames игрока для эффекта, так как эффект одинаковый для всех врагов
+			# Используем SpriteFrames игрока для эффекта
 			var player_visual = player_node.get_node_or_null("Visual")
-			print("DEBUG: Проверяем анимацию spiritual_strike_anim")
-			print("DEBUG: player_visual = ", player_visual)
 			if player_visual:
-				print("DEBUG: sprite_frames = ", player_visual.sprite_frames)
 				if player_visual.sprite_frames != null:
-					print("DEBUG: has_animation = ", player_visual.sprite_frames.has_animation("spiritual_strike_anim"))
 					if player_visual.sprite_frames.has_animation("spiritual_strike_anim"):
-						print("DEBUG: Проигрываем анимацию эффекта 'spiritual_strike_anim' на цели (поверх hurt)")
-						
 						# Вычисляем длительность анимации для синхронизации урона
 						var anim_speed = player_visual.sprite_frames.get_animation_speed("spiritual_strike_anim")
 						var anim_frames = player_visual.sprite_frames.get_frame_count("spiritual_strike_anim")
-						var anim_duration = anim_frames / anim_speed if anim_speed > 0 else 0.5  # Fallback: 0.5 секунды
-						var hit_moment = anim_duration * 0.5  # Середина анимации
-						print("DEBUG: anim_duration = ", anim_duration, ", hit_moment = ", hit_moment)
+						var anim_duration = anim_frames / anim_speed if anim_speed > 0 else 0.5
+						var hit_moment = anim_duration * 0.5
 						
 						# Получаем позицию цели для размещения эффекта
 						var target_visual = target.get_node_or_null("Visual")
 						var effect_position = target.global_position
 						if target_visual:
 							effect_position = target_visual.global_position
-						print("DEBUG: effect_position = ", effect_position)
 						
 						# Создаем временный узел для эффекта на цели
 						# Добавляем в GameWorld, чтобы эффект был поверх всех элементов
@@ -3093,28 +3039,19 @@ func use_player_ability(ability_id: String):
 						temp_effect.scale = Vector2(3.0, 3.0)  # Увеличиваем эффект в 3 раза
 						temp_effect.global_position = effect_position
 						
-						# Добавляем в GameWorld, а не к врагу, чтобы эффект был виден поверх всего
+						# Добавляем в GameWorld, чтобы эффект был виден поверх всего
 						var game_world = get_node_or_null("GameWorld")
 						if game_world:
 							game_world.add_child(temp_effect)
-							print("DEBUG: Эффект добавлен в GameWorld")
 						else:
 							target.add_child(temp_effect)
-							print("DEBUG: Эффект добавлен к врагу (GameWorld не найден)")
 						
-						# Показываем узел эффектов
+						# Показываем узел эффектов и проигрываем анимацию
 						temp_effect.visible = true
-						print("DEBUG: temp_effect.visible = ", temp_effect.visible)
-						print("DEBUG: temp_effect.global_position = ", temp_effect.global_position)
-						
-						# Проигрываем анимацию эффекта
 						if temp_effect.has_method("play_animation"):
 							temp_effect.play_animation("spiritual_strike_anim")
-							print("DEBUG: Анимация запущена через play_animation()")
 						else:
-							# Fallback: используем прямой вызов
 							temp_effect.play("spiritual_strike_anim")
-							print("DEBUG: Анимация запущена через play()")
 						
 						# Ждем момента удара (середина анимации)
 						await get_tree().create_timer(hit_moment).timeout
@@ -3155,7 +3092,6 @@ func use_player_ability(ability_id: String):
 						# Проверяем отражение урона
 						_handle_damage_reflection(target, player_node)
 					else:
-						print("DEBUG: Анимация 'spiritual_strike_anim' не найдена в sprite_frames")
 						# Fallback: наносим урон без анимации эффекта
 						var target_old_hp = target.hp
 						target.take_damage(damage, damage_type)
@@ -3174,7 +3110,6 @@ func use_player_ability(ability_id: String):
 						# Проверяем отражение урона
 						_handle_damage_reflection(target, player_node)
 				else:
-					print("DEBUG: sprite_frames == null")
 					# Fallback: наносим урон без анимации эффекта
 					var target_old_hp = target.hp
 					target.take_damage(damage, damage_type)
@@ -3195,7 +3130,6 @@ func use_player_ability(ability_id: String):
 					# Проверяем отражение урона
 					_handle_damage_reflection(target, player_node)
 			else:
-				print("DEBUG: player_visual == null")
 				# Fallback: наносим урон без анимации эффекта
 				var target_old_hp = target.hp
 				target.take_damage(damage, damage_type)
@@ -3229,7 +3163,6 @@ func use_player_ability(ability_id: String):
 					var damage_reduction = curse_effect.get("damage_reduction", 0.0)
 					if damage_reduction > 0:
 						arrow_damage = int(arrow_damage * (1.0 - damage_reduction))
-						print("DEBUG: Проклятие снижает урон каждой стрелы на ", damage_reduction * 100, "%. Урон стрелы после проклятия: ", arrow_damage)
 			
 			var total_arrow_damage = 0
 			
@@ -4361,10 +4294,6 @@ func select_target_by_position(target_position: int):
 	if found_index != -1:
 		selected_target_index = found_index
 	else:
-		print("WARNING: Враг не найден в массиве живых при выборе по позиции: ", target_enemy.display_name)
-	
-	print("DEBUG: Выбран враг по позиции ", position, ": ", target_enemy.display_name, " (индекс в alive: ", found_index, ")")
-	
 	_show_message("Цель: " + target_enemy.display_name, 1.0)
 	if ui.has_method("highlight_selected_target_enemy"):
 		ui.highlight_selected_target_enemy(selected_target_enemy)

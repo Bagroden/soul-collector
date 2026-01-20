@@ -45,7 +45,6 @@ func save_data():
 	if file:
 		file.store_string(json_string)
 		file.close()
-		print("GreatSoulsManager: Данные сохранены: ", data)
 	else:
 		print("ОШИБКА: Не удалось создать файл для сохранения великих душ!")
 
@@ -56,12 +55,10 @@ func reset_data():
 	# Удаляем файл сохранения
 	if FileAccess.file_exists("user://great_souls.save"):
 		DirAccess.remove_absolute("user://great_souls.save")
-	print("GreatSoulsManager: Данные сброшены")
 
 func load_data():
 	"""Загружает данные великих душ"""
 	if not FileAccess.file_exists("user://great_souls.save"):
-		print("GreatSoulsManager: Файл сохранения не найден, используем значения по умолчанию")
 		emit_great_souls_changed()
 		return
 	
@@ -84,6 +81,4 @@ func load_data():
 	
 	var data = json.get_data()
 	great_souls = data.get("great_souls", 0)
-	
-	print("GreatSoulsManager: Данные загружены: ", data)
 	emit_great_souls_changed()

@@ -45,7 +45,6 @@ func save_data():
 	if file:
 		file.store_string(json_string)
 		file.close()
-		print("StrongSoulsManager: Данные сохранены: ", data)
 	else:
 		print("ОШИБКА: Не удалось создать файл для сохранения сильных душ!")
 
@@ -56,12 +55,10 @@ func reset_data():
 	# Удаляем файл сохранения
 	if FileAccess.file_exists("user://strong_souls.save"):
 		DirAccess.remove_absolute("user://strong_souls.save")
-	print("StrongSoulsManager: Данные сброшены")
 
 func load_data():
 	"""Загружает данные сильных душ"""
 	if not FileAccess.file_exists("user://strong_souls.save"):
-		print("StrongSoulsManager: Файл сохранения не найден, используем значения по умолчанию")
 		emit_strong_souls_changed()
 		return
 	
@@ -84,6 +81,4 @@ func load_data():
 	
 	var data = json.get_data()
 	strong_souls = data.get("strong_souls", 0)
-	
-	print("StrongSoulsManager: Данные загружены: ", data)
 	emit_strong_souls_changed()

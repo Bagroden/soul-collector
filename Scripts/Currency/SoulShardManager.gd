@@ -81,7 +81,6 @@ func lose_half_run_soul_shards():
 	var lost_amount = int(run_soul_shards / 2.0)
 	run_soul_shards = run_soul_shards - lost_amount
 	run_soul_shards_changed.emit(run_soul_shards)
-	print("Игрок потерял половину осколков за забег: %d" % lost_amount)
 	return lost_amount
 
 func calculate_soul_shards_for_enemy(enemy_level: int, enemy_rarity: String) -> int:

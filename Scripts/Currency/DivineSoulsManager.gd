@@ -45,7 +45,6 @@ func save_data():
 	if file:
 		file.store_string(json_string)
 		file.close()
-		print("DivineSoulsManager: Данные сохранены: ", data)
 	else:
 		print("ОШИБКА: Не удалось создать файл для сохранения божественных душ!")
 
@@ -56,12 +55,10 @@ func reset_data():
 	# Удаляем файл сохранения
 	if FileAccess.file_exists("user://divine_souls.save"):
 		DirAccess.remove_absolute("user://divine_souls.save")
-	print("DivineSoulsManager: Данные сброшены")
 
 func load_data():
 	"""Загружает данные божественных душ"""
 	if not FileAccess.file_exists("user://divine_souls.save"):
-		print("DivineSoulsManager: Файл сохранения не найден, используем значения по умолчанию")
 		emit_divine_souls_changed()
 		return
 	
@@ -84,6 +81,4 @@ func load_data():
 	
 	var data = json.get_data()
 	divine_souls = data.get("divine_souls", 0)
-	
-	print("DivineSoulsManager: Данные загружены: ", data)
 	emit_divine_souls_changed()

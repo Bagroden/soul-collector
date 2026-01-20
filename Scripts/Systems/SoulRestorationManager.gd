@@ -97,25 +97,16 @@ func load_data(data: Dictionary):
 
 func recalculate_bonuses_from_learned_abilities():
 	"""Пересчитывает бонусы на основе изученных способностей развития души"""
-	print("=== НАЧАЛО ПЕРЕСЧЕТА БОНУСОВ ВОССТАНОВЛЕНИЯ ДУШИ ===")
-	print("Текущие бонусы ДО пересчета:")
-	print("  Заряды: ", soul_upgrades.get("charges", 0))
-	print("  Эффективность: ", soul_upgrades.get("efficiency", 0.0))
-	print("  Барьер: ", soul_upgrades.get("barrier", 0))
-	
 	# Сбрасываем все улучшения
 	soul_upgrades = {"charges": 0, "efficiency": 0.0, "barrier": 0}
-	print("Бонусы сброшены к нулю")
 	
 	# Получаем PlayerData
 	var player_manager = get_node_or_null("/root/PlayerManager")
 	if not player_manager:
-		print("ОШИБКА: PlayerManager не найден")
 		return
 	
 	var player_data = player_manager.get_player_data()
 	if not player_data:
-		print("ОШИБКА: PlayerData не найден")
 		return
 	
 	# Инициализируем систему пассивных способностей
@@ -123,35 +114,28 @@ func recalculate_bonuses_from_learned_abilities():
 	
 	var passive_ability_manager = player_data.passive_ability_manager
 	if not passive_ability_manager:
-		print("ОШИБКА: PassiveAbilityManager не найден")
 		return
-	
-	print("Всего изученных способностей: ", player_data.learned_passives.size())
 	
 	# Считаем бонус духовной мощи
 	var spiritual_power_bonus = 0
 	
 	# Проходим по всем изученным способностям
 	for ability_id in player_data.learned_passives:
-		print("  Проверяем способность: ", ability_id)
 		var ability = passive_ability_manager.get_ability(ability_id)
 		if not ability or not ("soul" in ability.tags):
 			continue
 		
 		# Определяем тип способности и добавляем соответствующий бонус
 		if "soul_restoration_efficiency_" in ability_id:
-			# Эффективность: разные бонусы для каждого уровня (40%, 45%, 55%, 65%, 80%, 100%)
+			# Эффективность: разные бонусы для каждого уровня
 			var level = int(ability_id.replace("soul_restoration_efficiency_", ""))
-			var efficiency_bonuses = [0.05, 0.10, 0.20, 0.30, 0.45, 0.65]  # +5%, +10%, +20%, +30%, +45%, +65%
+			var efficiency_bonuses = [0.05, 0.10, 0.20, 0.30, 0.45, 0.65]
 			if level > 0 and level <= efficiency_bonuses.size():
 				soul_upgrades["efficiency"] = efficiency_bonuses[level - 1]
-				print("Пересчет: Эффективность уровень ", level, " = +", efficiency_bonuses[level - 1] * 100, "%")
 			
 		elif "soul_restoration_charges_" in ability_id:
 			# Заряды: каждый уровень добавляет 1 заряд
-			var level = int(ability_id.replace("soul_restoration_charges_", ""))
 			soul_upgrades["charges"] += 1
-			print("Пересчет: Заряды уровень ", level, " = +1 заряд")
 			
 		elif "soul_restoration_barrier_" in ability_id:
 			# Барьер: зависит от уровня
@@ -159,15 +143,13 @@ func recalculate_bonuses_from_learned_abilities():
 			var barrier_values = [40, 80, 120, 120, 160, 200]
 			if level > 0 and level <= barrier_values.size():
 				soul_upgrades["barrier"] = barrier_values[level - 1]
-				print("Пересчет: Барьер уровень ", level, " = ", barrier_values[level - 1])
 		
 		elif "spiritual_power_upgrade_" in ability_id:
 			# Духовная мощь: каждый уровень добавляет к максимальной духовной мощи
 			var level = int(ability_id.replace("spiritual_power_upgrade_", ""))
-			var power_values = [1, 2, 3, 4, 5]  # +1, +2, +3, +4, +5
+			var power_values = [1, 2, 3, 4, 5]
 			if level > 0 and level <= power_values.size():
-				spiritual_power_bonus += power_values[level - 1]  # Складываем, а не заменяем!
-				print("Пересчет: Духовная мощь уровень ", level, " = +", power_values[level - 1], " (итого: ", spiritual_power_bonus, ")")
+				spiritual_power_bonus += power_values[level - 1]
 	
 	# Применяем бонус духовной мощи
 	if spiritual_power_bonus > 0:
@@ -176,19 +158,9 @@ func recalculate_bonuses_from_learned_abilities():
 		# Пересчитываем текущую духовную мощь
 		player_data._recalculate_used_spiritual_power()
 		player_data.emit_signal("spiritual_power_changed", player_data.spiritual_power, player_data.max_spiritual_power, player_data.used_spiritual_power)
-		print("Духовная мощь: базовая ", base_max_spiritual_power, " + бонус ", spiritual_power_bonus, " = ", player_data.max_spiritual_power)
 	
-	print("=== Итоговые бонусы восстановления души ===")
-	print("Заряды: +", soul_upgrades["charges"])
-	print("Эффективность: +", soul_upgrades["efficiency"] * 100, "%")
-	print("Барьер: ", soul_upgrades["barrier"])
-	print("Духовная мощь: +", spiritual_power_bonus)
-	print("Максимум зарядов: ", get_max_charges())
-	print("Текущие заряды: ", current_charges)
-	
-	# Если текущие заряды больше нового максимума (после уменьшения бонусов), уменьшаем до максимума
+	# Если текущие заряды больше нового максимума, уменьшаем до максимума
 	if current_charges > get_max_charges():
-		print("ВНИМАНИЕ: Текущие заряды (", current_charges, ") больше максимума (", get_max_charges(), "), уменьшаем до максимума")
 		current_charges = get_max_charges()
 	
 	# Обновляем UI

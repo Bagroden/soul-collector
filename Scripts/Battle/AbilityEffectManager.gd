@@ -17,18 +17,14 @@ func _load_ability_effect_spriteframes() -> void:
 	if ResourceLoader.exists(ABILITY_EFFECT_SPRITEFRAMES_PATH):
 		ability_effect_spriteframes = load(ABILITY_EFFECT_SPRITEFRAMES_PATH) as SpriteFrames
 		if ability_effect_spriteframes == null:
-			print("Предупреждение: Ресурс по пути ", ABILITY_EFFECT_SPRITEFRAMES_PATH, " не является SpriteFrames. Выполняем автоматический экспорт.")
 			_auto_export_animations()
 		else:
 			var anim_count = ability_effect_spriteframes.get_animation_names().size()
-			print("DEBUG: Универсальный SpriteFrames с анимациями способностей загружен. Анимаций: ", anim_count)
 			# Если файл существует, но пустой (нет анимаций), выполняем автоматический экспорт
 			if anim_count == 0:
-				print("Файл существует, но пустой. Выполняем автоматический экспорт анимаций...")
 				_auto_export_animations()
 	else:
 		# Если ресурс не существует, выполняем автоматический экспорт
-		print("Ресурс анимаций способностей не найден. Выполняем автоматический экспорт...")
 		_auto_export_animations()
 
 func _save_ability_effect_spriteframes() -> void:
@@ -37,14 +33,9 @@ func _save_ability_effect_spriteframes() -> void:
 		if not DirAccess.dir_exists_absolute(dir):
 			DirAccess.make_dir_recursive_absolute(dir)
 		ResourceSaver.save(ability_effect_spriteframes, ABILITY_EFFECT_SPRITEFRAMES_PATH)
-		print("Универсальный SpriteFrames с анимациями способностей сохранен в: ", ABILITY_EFFECT_SPRITEFRAMES_PATH)
 
 ## Автоматический экспорт анимаций из PlayerBody
 func _auto_export_animations() -> void:
-	print("==================================================")
-	print("Автоматический экспорт анимаций способностей...")
-	print("==================================================")
-	
 	# Используем существующий скрипт экспорта
 	var exporter_script = load("res://Scripts/Tools/ExportAbilityAnimations.gd")
 	if exporter_script:
@@ -53,18 +44,13 @@ func _auto_export_animations() -> void:
 		# Перезагружаем ресурс после экспорта
 		if ResourceLoader.exists(ABILITY_EFFECT_SPRITEFRAMES_PATH):
 			ability_effect_spriteframes = load(ABILITY_EFFECT_SPRITEFRAMES_PATH) as SpriteFrames
-			if ability_effect_spriteframes:
-				print("✅ Автоматический экспорт завершен. Загружено анимаций: ", ability_effect_spriteframes.get_animation_names().size())
-			else:
-				print("⚠️  Экспорт выполнен, но не удалось загрузить ресурс. Создаем пустой.")
+			if not ability_effect_spriteframes:
 				ability_effect_spriteframes = SpriteFrames.new()
 				_save_ability_effect_spriteframes()
 		else:
-			print("⚠️  Экспорт не создал файл. Создаем пустой ресурс.")
 			ability_effect_spriteframes = SpriteFrames.new()
 			_save_ability_effect_spriteframes()
 	else:
-		print("⚠️  Не удалось загрузить скрипт экспорта. Создаем пустой ресурс.")
 		ability_effect_spriteframes = SpriteFrames.new()
 		_save_ability_effect_spriteframes()
 
@@ -82,45 +68,31 @@ func has_animation_for_ability(ability_id: String) -> bool:
 ## Установить ссылку на AbilityAnimationManager
 func set_animation_manager(manager: AbilityAnimationManager) -> void:
 	ability_animation_manager = manager
-	print("DEBUG AbilityEffectManager: ability_animation_manager установлен: ", manager.name if manager else "null")
 
 ## Получить имя анимации для способности из AbilityAnimationData
 func _get_animation_name_for_ability(ability_id: String) -> String:
-	print("DEBUG AbilityEffectManager: _get_animation_name_for_ability вызван для ability_id='", ability_id, "'")
-	
 	# Используем сохраненную ссылку на менеджер
 	if ability_animation_manager and ability_animation_manager.has_method("get_animation_for_ability"):
-		var anim_name = ability_animation_manager.get_animation_for_ability(ability_id)
-		print("DEBUG AbilityEffectManager: animation_name из сохраненной ссылки = '", anim_name, "'")
-		return anim_name
+		return ability_animation_manager.get_animation_for_ability(ability_id)
 	
 	# Fallback: пытаемся найти AbilityAnimationManager как брата (оба дочерние узлы BattleManager)
 	var parent = get_parent()
-	print("DEBUG AbilityEffectManager: parent = ", parent.name if parent else "null")
-	
 	if parent:
 		# Ищем как брата (оба дочерние узлы одного родителя)
 		var animation_manager = parent.get_node_or_null("AbilityAnimationManager")
-		print("DEBUG AbilityEffectManager: animation_manager из parent (как брат) = ", animation_manager.name if animation_manager else "null")
 		if animation_manager and animation_manager.has_method("get_animation_for_ability"):
-			var anim_name = animation_manager.get_animation_for_ability(ability_id)
-			print("DEBUG AbilityEffectManager: animation_name из parent = '", anim_name, "'")
 			# Сохраняем ссылку для будущих вызовов
 			ability_animation_manager = animation_manager
-			return anim_name
+			return animation_manager.get_animation_for_ability(ability_id)
 		else:
 			# Если не найден как брат, пробуем найти через get_tree()
-			print("DEBUG AbilityEffectManager: Пробуем найти через get_tree()...")
 			var scene_root = get_tree().current_scene
 			if scene_root:
 				animation_manager = scene_root.get_node_or_null("AbilityAnimationManager")
-				print("DEBUG AbilityEffectManager: animation_manager из current_scene = ", animation_manager.name if animation_manager else "null")
 				if animation_manager and animation_manager.has_method("get_animation_for_ability"):
-					var anim_name = animation_manager.get_animation_for_ability(ability_id)
-					print("DEBUG AbilityEffectManager: animation_name из current_scene = '", anim_name, "'")
 					# Сохраняем ссылку для будущих вызовов
 					ability_animation_manager = animation_manager
-					return anim_name
+					return animation_manager.get_animation_for_ability(ability_id)
 	
 	# Fallback: пытаемся найти через абсолютный путь
 	var animation_manager = get_node_or_null("/root/BattleManager/AbilityAnimationManager")
@@ -130,15 +102,11 @@ func _get_animation_name_for_ability(ability_id: String) -> String:
 		if root:
 			animation_manager = root.get_node_or_null("BattleManager/AbilityAnimationManager")
 	
-	print("DEBUG AbilityEffectManager: animation_manager из fallback = ", animation_manager.name if animation_manager else "null")
 	if animation_manager and animation_manager.has_method("get_animation_for_ability"):
-		var anim_name = animation_manager.get_animation_for_ability(ability_id)
-		print("DEBUG AbilityEffectManager: animation_name из fallback = '", anim_name, "'")
 		# Сохраняем ссылку для будущих вызовов
 		ability_animation_manager = animation_manager
-		return anim_name
+		return animation_manager.get_animation_for_ability(ability_id)
 	
-	print("ОШИБКА: AbilityAnimationManager не найден!")
 	return ""
 
 ## Проиграть эффект способности на цели
@@ -157,34 +125,12 @@ func play_ability_effect_on_target(
 	z_index: int = 100,
 	parent_node: Node = null
 ) -> AnimatedSprite2D:
-	print("DEBUG AbilityEffectManager: play_ability_effect_on_target вызван для ability_id='", ability_id, "'")
-	
-	if not ability_effect_spriteframes:
-		print("ОШИБКА: ability_effect_spriteframes не загружен!")
+	if not ability_effect_spriteframes or not target:
 		return null
-	
-	print("DEBUG AbilityEffectManager: ability_effect_spriteframes загружен, анимаций: ", ability_effect_spriteframes.get_animation_names().size())
-	print("DEBUG AbilityEffectManager: Доступные анимации: ", ability_effect_spriteframes.get_animation_names())
-	
-	if not target:
-		print("ОШИБКА: target is null!")
-		return null
-	
-	print("DEBUG AbilityEffectManager: target найден: ", target.name)
 	
 	var animation_name = _get_animation_name_for_ability(ability_id)
-	print("DEBUG AbilityEffectManager: animation_name для '", ability_id, "' = '", animation_name, "'")
-	
-	if animation_name == "":
-		print("ОШИБКА: Анимация для способности '", ability_id, "' не найдена в маппинге!")
+	if animation_name == "" or not ability_effect_spriteframes.has_animation(animation_name):
 		return null
-	
-	if not ability_effect_spriteframes.has_animation(animation_name):
-		print("ОШИБКА: Анимация '", animation_name, "' не найдена в SpriteFrames!")
-		print("DEBUG AbilityEffectManager: Доступные анимации: ", ability_effect_spriteframes.get_animation_names())
-		return null
-	
-	print("DEBUG AbilityEffectManager: Анимация '", animation_name, "' найдена в SpriteFrames")
 	
 	# Получаем позицию цели
 	var target_visual = target.get_node_or_null("Visual")
@@ -192,8 +138,6 @@ func play_ability_effect_on_target(
 	if target_visual:
 		effect_position = target_visual.global_position
 	effect_position += position_offset
-	
-	print("DEBUG AbilityEffectManager: effect_position = ", effect_position)
 	
 	# Создаем временный узел для эффекта
 	var temp_effect = AnimatedSprite2D.new()
@@ -203,36 +147,25 @@ func play_ability_effect_on_target(
 	temp_effect.scale = scale
 	temp_effect.global_position = effect_position
 	
-	print("DEBUG AbilityEffectManager: Создан временный узел эффекта: ", temp_effect.name)
-	print("DEBUG AbilityEffectManager: z_index = ", z_index, ", scale = ", scale)
-	
 	# Определяем родительский узел
 	if parent_node:
-		print("DEBUG AbilityEffectManager: Используем переданный parent_node: ", parent_node.name)
 		parent_node.add_child(temp_effect)
 	else:
 		# Пытаемся найти GameWorld
 		var game_world = get_node_or_null("/root/BattleManager/GameWorld")
 		if game_world:
-			print("DEBUG AbilityEffectManager: Добавляем эффект в GameWorld: ", game_world.name)
 			game_world.add_child(temp_effect)
 		else:
 			# Fallback: добавляем к цели
-			print("DEBUG AbilityEffectManager: Fallback - добавляем эффект к цели: ", target.name)
 			target.add_child(temp_effect)
 			temp_effect.position = Vector2.ZERO
 	
-	print("DEBUG AbilityEffectManager: Узел эффекта добавлен в дерево сцены")
-	print("DEBUG AbilityEffectManager: Родитель узла: ", temp_effect.get_parent().name if temp_effect.get_parent() else "null")
-	
 	# Проигрываем анимацию
-	print("DEBUG AbilityEffectManager: Запускаем анимацию '", animation_name, "'")
 	temp_effect.play(animation_name)
 	
 	# Автоматически удаляем узел после завершения анимации
 	temp_effect.animation_finished.connect(_on_effect_animation_finished.bind(temp_effect), CONNECT_ONE_SHOT)
 	
-	print("DEBUG AbilityEffectManager: Эффект '", animation_name, "' для способности '", ability_id, "' успешно запущен на цели")
 	return temp_effect
 
 ## Проиграть эффект способности на источнике (атакующем)
@@ -272,7 +205,6 @@ func play_ability_effect_on_caster(caster: Node2D, ability_id: String) -> bool:
 		# Автоматически удаляем узел после завершения анимации
 		temp_effect.animation_finished.connect(_on_effect_animation_finished.bind(temp_effect), CONNECT_ONE_SHOT)
 		
-		print("DEBUG: Проигрываем эффект '", animation_name, "' для способности '", ability_id, "' на кастере")
 		return true
 	
 	# Fallback: используем стандартную атаку
