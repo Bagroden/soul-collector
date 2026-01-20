@@ -4060,9 +4060,16 @@ func _use_learned_ability(ability_id: String, slot_index: int):
 		if damage_result is Dictionary:
 			actual_damage = damage_result.get("damage", damage)
 		
+		# Приводим к целому числу
+		var damage_value = 0
+		if actual_damage is int or actual_damage is float:
+			damage_value = int(actual_damage)
+		else:
+			damage_value = int(str(actual_damage).to_float())
+		
 		# Показываем сообщение
 		var crit_text = " (КРИТ!)" if is_crit else ""
-		_show_message("Вы использовали " + ability.name + "! Урон: " + str(int(actual_damage)) + crit_text, 2.0)
+		_show_message("Вы использовали " + ability.name + "! Урон: " + str(damage_value) + crit_text, 2.0)
 		
 		# Проигрываем анимацию способности
 		if ability_effect_manager:
