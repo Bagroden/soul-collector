@@ -659,7 +659,6 @@ func _update_background():
 		var bg_texture = load(bg_path)
 		if bg_texture:
 			background_texture.texture = bg_texture
-			print("Бэкграунд установлен для локации '", location_id, "': ", bg_path)
 		else:
 			print("ОШИБКА: Не удалось загрузить бэкграунд: ", bg_path)
 			# Fallback на дефолтный фон
@@ -1176,7 +1175,6 @@ func _check_battle_result():
 		
 		if was_won:
 			# Победа - обрабатываем результат боя
-			print("DEBUG: Игрок победил. Обработка результата боя...")
 			_on_battle_completed()
 		else:
 			# Поражение - сбрасываем прогресс локации и возвращаем в Колодец душ

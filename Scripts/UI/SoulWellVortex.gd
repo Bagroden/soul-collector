@@ -140,7 +140,6 @@ func _process(delta: float) -> void:
 
 func _create_all_particles() -> void:
 	## Создает все частицы вихря сразу при инициализации
-	print("🌪️ Создаем вихрь из ", target_particle_count, " частиц...")
 	
 	# Создаем массив типов душ для равномерного распределения
 	var soul_types = []
@@ -177,9 +176,6 @@ func _create_all_particles() -> void:
 		if soul_type in type_counts:
 			type_counts[soul_type] += 1
 	
-	print("📊 Создаем души: ", soul_types.size())
-	print("  └─ Обычные (всего ", base_souls_count, "): Common=", type_counts["Common"], " Uncommon=", type_counts["Uncommon"], " Rare=", type_counts["Rare"], " Epic=", type_counts["Epic"], " Legendary=", type_counts["Legendary"], " Mythic=", type_counts["Mythic"])
-	print("  └─ Специальные: Strong=", type_counts["Strong"], " Great=", type_counts["Great"], " Divine=", type_counts["Divine"])
 	
 	# Создаем частицы с заранее определенными типами
 	for i in range(target_particle_count):
@@ -319,16 +315,13 @@ func _update_target_particle_count() -> void:
 	if has_node("/root/SoulShard"):
 		var soul_shards_manager = get_node("/root/SoulShard")
 		soul_shards = soul_shards_manager.get_soul_shards()
-		print("🔮 Осколков душ у игрока: ", soul_shards)
 	else:
-		print("⚠️ ОШИБКА: Автозагрузка SoulShard не найдена!")
 	
 	# Определяем количество частиц по таблице
 	target_particle_count = 0
 	for tier in SOUL_SHARDS_TO_PARTICLES:
 		if soul_shards >= tier["min"] and soul_shards <= tier["max"]:
 			target_particle_count = tier["particles"]
-			print("📊 Базовых частиц: ", target_particle_count, " (уровень: ", tier["min"], "-", tier["max"], ")")
 			break
 	
 	# Обнуляем счетчики специальных душ
@@ -370,7 +363,6 @@ func _update_target_particle_count() -> void:
 	target_particle_count += special_souls_target["Great"]
 	target_particle_count += special_souls_target["Divine"]
 	
-	print("✨ Итого частиц в вихре: ", target_particle_count, " (обычные + Strong:", special_souls_target["Strong"], " + Great:", special_souls_target["Great"], " + Divine:", special_souls_target["Divine"], ")")
 
 func _get_next_soul_type() -> String:
 	## Определяет следующий тип души для спавна

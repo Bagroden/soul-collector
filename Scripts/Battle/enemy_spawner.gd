@@ -102,9 +102,6 @@ func spawn_random_enemy(force_elite: bool = false, enemy_index: int = 0) -> Node
 	# Устанавливаем редкость врага
 	_set_enemy_rarity(enemy_instance, rarity)
 	
-	print("Спавн врага: ", enemy_instance.display_name if "display_name" in enemy_instance else "Unknown", 
-		  " | Редкость: ", rarity, " | Босс: ", is_boss, " | Индекс: ", enemy_index)
-	
 	return enemy_instance
 
 func _get_deterministic_enemy_from_pool(_room: RoomData, _enemy_index: int) -> String:

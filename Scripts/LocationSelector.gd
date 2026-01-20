@@ -38,7 +38,6 @@ func _ready():
 	var overlay = get_node_or_null("Overlay")
 	if overlay:
 		overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		print("DEBUG: Overlay настроен на игнорирование кликов")
 	
 	# Также обрабатываем клики на самом Control (если клик не попал в Background)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -57,13 +56,11 @@ func _ready():
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
 	
-	print("DEBUG: LocationSelector готов, фон кликабелен")
 
 func _create_location_manager():
 	# Получаем LocationManager как Autoload
 	location_manager = get_node_or_null("/root/LocationManager")
 	if not location_manager:
-		print("ОШИБКА: LocationManager не найден как Autoload!")
 		return
 	
 
@@ -311,12 +308,10 @@ func _create_poi_sprite(poi_id: String, config: Dictionary, viewport_size: Vecto
 	# Загружаем SpriteFrames ресурс
 	var sprite_frames_path = config.get("sprite_frames_path", "")
 	if sprite_frames_path == "":
-		print("WARNING: Путь к SpriteFrames не указан для POI: ", poi_id)
 		return
 	
 	var sprite_frames = load(sprite_frames_path)
 	if not sprite_frames:
-		print("WARNING: Не удалось загрузить SpriteFrames для POI: ", poi_id, " по пути: ", sprite_frames_path)
 		return
 	
 	# Создаем AnimatedSprite2D
@@ -343,9 +338,7 @@ func _create_poi_sprite(poi_id: String, config: Dictionary, viewport_size: Vecto
 	var animation_name = config.get("animation_name", "idle")
 	if poi_sprite.sprite_frames.has_animation(animation_name):
 		poi_sprite.play(animation_name)
-		print("DEBUG: Создана POI для ", poi_id, " в позиции (", x_pos, ", ", y_pos, ")")
 	else:
-		print("WARNING: Анимация '", animation_name, "' не найдена для POI: ", poi_id)
 	
 	# Добавляем в сцену
 	add_child(poi_sprite)
@@ -405,16 +398,13 @@ func _get_location_at_poi_click(mouse_pos: Vector2):
 			# Нашли клик рядом с POI
 			if poi_id == "soul_well":
 				# Колодец душ - возвращаем специальный маркер
-				print("DEBUG: ✅ Клик по Колодцу душ на расстоянии ", distance, " пикселей")
 				return "soul_well"
 			
 			# Ищем локацию напрямую в locations (независимо от разблокировки)
 			if location_manager.locations.has(poi_id):
 				var location = location_manager.locations[poi_id]
-				print("DEBUG: ✅ Клик по POI ", poi_id, " (", location.location_name, ") на расстоянии ", distance, " пикселей")
 				return location
 			else:
-				print("DEBUG: ❌ Локация ", poi_id, " не найдена в location_manager.locations")
 	
 	return null
 
@@ -1463,7 +1453,6 @@ func _on_location_selected(location):
 		SceneTransition.change_scene("res://Scenes/RoomSelector.tscn")
 
 func _on_back_pressed():
-	print("Возвращаемся к экрану подготовки персонажа...")
 	
 	# Осколки душ за забег уже перенесены в хранилище при завершении уровня
 	# (в RoomSelector.gd при вызове _return_to_location_selector())
@@ -1475,14 +1464,12 @@ func _on_back_pressed():
 	SceneTransition.change_scene("res://Scenes/UI/CharacterPreparation.tscn")
 
 func _on_refresh_pressed():
-	print("Обновляем список локаций...")
 	# Обновление не требуется, так как список больше не используется
 
 func _change_music_for_location(location_id: String):
 	"""Меняет музыку в зависимости от выбранной локации"""
 	var music_player = get_node_or_null("/root/MusicPlayer")
 	if not music_player:
-		print("MusicPlayer не найден")
 		return
 	
 	match location_id:
@@ -1514,11 +1501,9 @@ func _return_to_main_menu_music():
 		if main_menu_music:
 			music_player.play_music(main_menu_music, true, true)  # fade_in=true, crossfade=true
 	else:
-		print("MusicPlayer не найден")
 
 func _create_test_arena_manually():
 	"""Создает тестовую арену вручную, если её нет в LocationManager"""
-	print("Создаем тестовую арену вручную...")
 	
 	# Загружаем класс LocationData
 	var LocationDataClass = preload("res://Scripts/LocationData.gd")

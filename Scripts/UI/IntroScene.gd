@@ -180,7 +180,6 @@ func _input(event):
 	elif event.is_pressed() and not is_transitioning:
 		# Любое нажатие клавиши переключает на следующий слайд
 		# Проверяем только что не идет fade-out переход
-		print("👆 Нажата клавиша - переход к следующему слайду")
 		_next_slide()
 
 func _start_intro():
@@ -202,14 +201,12 @@ func _show_slide(index: int):
 		image_display.texture = texture
 	else:
 		# Если изображения нет, используем цветной прямоугольник как placeholder
-		print("⚠️ Изображение не найдено: ", slide.image)
 	
 	# Воспроизводим озвучку слайда и получаем реальную длительность аудио
 	var audio_duration = _play_slide_audio(slide)
 	
 	# Используем реальную длительность аудио + 0.5 сек паузы, или дефолтную если аудио нет
 	var duration = audio_duration if audio_duration > 0 else slide.get("duration", 4.0)
-	print("⏱️ Слайд ", index + 1, " будет показан ", duration, " секунд")
 	
 	# Обновляем длительность в слайде для кинематографического эффекта
 	slide["duration"] = duration
@@ -244,7 +241,6 @@ func _fade_in_slide():
 	# Применяем кинематографический эффект
 	_apply_cinematic_effect(fade_tween, effect, slide.get("duration", 4.0))
 	
-	print("✅ Fade in запущен для слайда ", current_slide + 1)
 
 func _apply_cinematic_effect(tween: Tween, effect: CinematicEffect, duration: float):
 	"""Применяет кинематографический эффект к изображению"""
@@ -256,40 +252,33 @@ func _apply_cinematic_effect(tween: Tween, effect: CinematicEffect, duration: fl
 		CinematicEffect.ZOOM_IN:
 			# Плавное приближение (от 100% до 120%)
 			tween.tween_property(image_display, "scale", Vector2(1.2, 1.2), duration).from(Vector2.ONE)
-			print("🎬 Эффект: ZOOM IN (приближение)")
 		
 		CinematicEffect.ZOOM_OUT:
 			# Плавное отдаление (от 120% до 100%)
 			tween.tween_property(image_display, "scale", Vector2.ONE, duration).from(Vector2(1.2, 1.2))
-			print("🎬 Эффект: ZOOM OUT (отдаление)")
 		
 		CinematicEffect.PAN_LEFT:
 			# Панорама влево + легкий zoom чтобы не было черных полос
 			image_display.scale = Vector2(1.15, 1.15)  # Увеличиваем базовый масштаб
 			tween.tween_property(image_display, "position:x", 80.0, duration).from(-80.0)
-			print("🎬 Эффект: PAN LEFT (панорама влево)")
 		
 		CinematicEffect.PAN_RIGHT:
 			# Панорама вправо + легкий zoom чтобы не было черных полос
 			image_display.scale = Vector2(1.15, 1.15)  # Увеличиваем базовый масштаб
 			tween.tween_property(image_display, "position:x", -80.0, duration).from(80.0)
-			print("🎬 Эффект: PAN RIGHT (панорама вправо)")
 		
 		CinematicEffect.PAN_UP:
 			# Панорама вверх + легкий zoom чтобы не было черных полос
 			image_display.scale = Vector2(1.15, 1.15)  # Увеличиваем базовый масштаб
 			tween.tween_property(image_display, "position:y", 40.0, duration).from(-40.0)
-			print("🎬 Эффект: PAN UP (панорама вверх)")
 		
 		CinematicEffect.PAN_DOWN:
 			# Панорама вниз + легкий zoom чтобы не было черных полос
 			image_display.scale = Vector2(1.15, 1.15)  # Увеличиваем базовый масштаб
 			tween.tween_property(image_display, "position:y", -40.0, duration).from(40.0)
-			print("🎬 Эффект: PAN DOWN (панорама вниз)")
 		
 		CinematicEffect.NONE:
 			# Без эффекта
-			print("🎬 Эффект: NONE (статичный слайд)")
 
 func _fade_out_slide():
 	"""Анимация исчезновения слайда"""
@@ -311,20 +300,16 @@ func _fade_out_slide():
 	
 	# ВАЖНО: Сбрасываем флаг перехода
 	is_transitioning = false
-	print("✅ Fade out завершен, переход к следующему слайду")
 
 func _on_slide_timeout():
 	"""Обработчик окончания времени показа слайда"""
-	print("⏰ Таймер истек для слайда ", current_slide + 1)
 	_next_slide()
 
 func _next_slide():
 	"""Переход к следующему слайду"""
 	if is_transitioning:
-		print("⚠️ Переход уже в процессе, пропускаем")
 		return
 	
-	print("➡️ Переход к следующему слайду (текущий: ", current_slide + 1, ")")
 	
 	# Останавливаем таймер
 	if slide_timer.is_stopped() == false:
@@ -339,7 +324,6 @@ func _next_slide():
 
 func _finish_intro():
 	"""Завершает показ интро и переходит к главному меню"""
-	print("✅ Интро завершено")
 	
 	# НЕ сохраняем флаг - интро будет показываться каждый раз
 	# IntroManager.mark_intro_as_shown()
@@ -396,16 +380,13 @@ func _play_slide_audio(slide: Dictionary) -> float:
 		
 		# Получаем длительность аудио и добавляем небольшую паузу (0.5 сек)
 		var duration = audio_stream.get_length() + 0.5
-		print("🎙️ Воспроизводится озвучка: ", audio_path, " (длительность: ", audio_stream.get_length(), " сек)")
 		return duration
 	else:
-		print("⚠️ Не удалось загрузить аудио: ", audio_path)
 		return 0.0
 
 func _play_background_music(music_path: String = "res://Assets/Audio/Intro/intro_music.ogg"):
 	"""Воспроизводит фоновую музыку для интро"""
 	if not ResourceLoader.exists(music_path):
-		print("⚠️ Фоновая музыка не найдена: ", music_path)
 		return
 	
 	var music_stream = load(music_path) as AudioStream
@@ -416,7 +397,6 @@ func _play_background_music(music_path: String = "res://Assets/Audio/Intro/intro
 		background_music_player.volume_db = -10.0  # Тише, чтобы не заглушать голос
 		add_child(background_music_player)
 		background_music_player.play()
-		print("🎵 Фоновая музыка запущена")
 
 func _exit_tree():
 	"""Очистка при выходе"""

@@ -143,12 +143,12 @@ func _initialize_locations():
 func _add_placeholder_locations():
 	var placeholder_locations = [
 		{"id": "sinister_swamps", "name": "Туманные болота", "desc": "Много веков орки живут на этих болотах.", "min": 10, "max": 15, "prev": "cemetery"},
-		{"id": "mysterious_wastelands", "name": "Древняя пещера", "desc": "Мало кто вернулся из вошедших.", "min": 12, "max": 18, "prev": "sinister_swamps"},
+		{"id": "dark_forest", "name": "Гиблый лес", "desc": "Опасный лес, где скрываются разбойники и головорезы", "min": 8, "max": 12, "prev": "sinister_swamps"},
+		{"id": "mysterious_wastelands", "name": "Древняя пещера", "desc": "Мало кто вернулся из вошедших.", "min": 12, "max": 18, "prev": "dark_forest"},
 		{"id": "volcanic_valley", "name": "Вулканическая долина", "desc": "Раскалённая долина у подножия вулкана", "min": 15, "max": 20, "prev": "mysterious_wastelands"},
 		{"id": "bandit_camp", "name": "Лагерь бандитов", "desc": "Укреплённый лагерь разбойников", "min": 18, "max": 25, "prev": "volcanic_valley"},
 		{"id": "demon_lair", "name": "Демоническое логово", "desc": "Логово демонов из преисподней", "min": 20, "max": 30, "prev": "bandit_camp"},
-		{"id": "dark_forest", "name": "Гиблый лес", "desc": "Гиблый лес, тут обитают волшебные создания", "min": 8, "max": 12, "prev": "sinister_swamps"},
-		{"id": "angel_halls", "name": "Чертоги ангелов", "desc": "Небесные чертоги божественных существ", "min": 25, "max": 40, "prev": "dark_forest"}
+		{"id": "angel_halls", "name": "Чертоги ангелов", "desc": "Небесные чертоги божественных существ", "min": 25, "max": 40, "prev": "demon_lair"}
 	]
 	
 	for loc_data in placeholder_locations:
@@ -226,7 +226,6 @@ func _add_placeholder_locations():
 			# Legendary (30 уровень)
 			EnemyPool.new("res://Scenes/Battle/Enemy_TharnokDemon.tscn", "legendary", 5, 30, 30)
 		]
-		print("Добавлены демоны в Демоническую цитадель: Тарнок, Палач, Алкара, Проклятий (с разными редкостями)")
 
 func get_location(location_id: String):
 	return locations.get(location_id, null)

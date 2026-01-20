@@ -12,7 +12,6 @@ func set_battle_result(enemy_level: int, enemy_rarity: String, won: bool):
 	last_enemy_rarity = enemy_rarity
 	battle_won = won
 	has_result = true
-	print("BattleResult: Враг уровень ", enemy_level, ", Редкость ", enemy_rarity, ", Победа ", won)
 
 func get_last_enemy_level() -> int:
 	return last_enemy_level

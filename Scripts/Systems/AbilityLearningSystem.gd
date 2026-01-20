@@ -1553,7 +1553,6 @@ func _load_progress():
 
 func _force_fix_ability_levels():
 	"""ПРИНУДИТЕЛЬНО исправляет уровни способностей на основе is_learned флага"""
-	print("=== ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ УРОВНЕЙ СПОСОБНОСТЕЙ ===")
 	var fixed_count = 0
 	
 	for ability_id in learning_progress:
@@ -1593,7 +1592,7 @@ func _force_fix_ability_levels():
 		print("=== ИСПРАВЛЕНО ", fixed_count, " СПОСОБНОСТЕЙ ===")
 		_save_progress()  # Сохраняем исправленные данные
 	else:
-		print("=== ВСЕ СПОСОБНОСТИ В ПОРЯДКЕ ===")
+		pass
 
 func _migrate_old_saves():
 	"""Мигрирует старые сохранения для поддержки системы уровней"""

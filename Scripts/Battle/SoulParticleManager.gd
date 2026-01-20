@@ -32,8 +32,6 @@ func spawn_soul_particles(enemy_position: Vector2, player_node: Node2D, enemy_ra
 	# Определяем количество частиц
 	var particle_count = _calculate_particle_count(enemy_rarity, enemy_level)
 	
-	print("Создаем %d частиц души (редкость: %s, уровень: %d)" % [particle_count, enemy_rarity, enemy_level])
-	
 	# Создаем частицы с небольшой задержкой между ними
 	for i in range(particle_count):
 		# Задержка для создания эффекта "взрыва" душ

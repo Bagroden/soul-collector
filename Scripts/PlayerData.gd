@@ -1256,7 +1256,6 @@ func add_quest(quest_id: String):
 	"""Добавляет квест напрямую в активные (для обратной совместимости)"""
 	if quest_id not in active_quests:
 		active_quests.append(quest_id)
-		print("📜 Квест добавлен: ", quest_id)
 
 func complete_quest(quest_id: String):
 	"""Завершает квест"""

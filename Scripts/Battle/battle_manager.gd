@@ -127,7 +127,6 @@ func _ready():
 		print("Тестовый режим: спавним тестового врага...")
 		spawn_enemy()
 	else:
-		print("Обычный режим: спавним случайного врага...")
 		spawn_enemy()
 	
 	# подключаем сигналы
@@ -480,8 +479,6 @@ func _update_room_rarity_and_description():
 			current_room.description = "Здесь обитает " + rarity_name + " Элитный враг! Будьте осторожны!"
 		else:
 			current_room.description = "Здесь обитает " + rarity_name + " враг."
-	
-	print("Обновлена комната: редкость = ", rarest_rarity, ", название = ", current_room.room_name, ", описание = ", current_room.description)
 
 func _get_rarest_enemy() -> Node2D:
 	"""Возвращает самого редкого врага из массива enemy_nodes"""
@@ -2395,7 +2392,6 @@ func _on_enemy_died():
 
 func _handle_victory():
 	"""Обрабатывает победу: награды, прогресс способностей, сообщения"""
-	print("Все враги повержены! ПОБЕДА!")
 	# Собираем прогресс способностей от ВСЕХ врагов
 	var ability_progress = []
 	
@@ -2532,8 +2528,6 @@ func _show_victory_screen(ability_progress: Array, rewards_info: Dictionary):
 	add_child(victory_instance)
 	# Настраиваем данные после добавления в дерево
 	victory_instance.setup_victory_data(victory_data)
-	
-	print("Показываем экран победы с данными: ", victory_data)
 
 func _on_player_died():
 	# проигрываем анимацию смерти
@@ -2791,7 +2785,6 @@ func _save_battle_result() -> Array:
 			continue
 		
 		battle_result.set_battle_result(dead_enemy.level, dead_enemy.rarity, true)
-		print("Сохранен результат боя: Враг уровень ", dead_enemy.level, ", Редкость ", dead_enemy.rarity)
 		
 		# Временно устанавливаем enemy_node для совместимости
 		var old_enemy = enemy_node
@@ -2882,8 +2875,6 @@ func _add_ability_learning_progress() -> Array:
 		
 		# Получаем редкость врага
 		var enemy_rarity = enemy_node.rarity.to_lower()
-		
-		print("Тип врага: ", enemy_type, " (редкость: ", enemy_rarity, ")")
 		
 		# Добавляем прогресс изучения и получаем список полученного прогресса
 		progress_gained = ability_learning_system.add_progress(enemy_type, enemy_rarity)
@@ -3521,8 +3512,6 @@ func _calculate_and_award_soul_shards():
 	# Показываем сообщение о получении осколков душ
 	var rarity_name = get_rarity_display_name(enemy_rarity)
 	_show_message("Получено осколков душ: %d (Уровень %d, %s)" % [soul_shards_earned, enemy_level, rarity_name], 3.0)
-	
-	print("Награда за победу: %d осколков душ (Уровень %d, Редкость %s)" % [soul_shards_earned, enemy_level, enemy_rarity])
 
 func _award_special_currencies(enemy_rarity: String):
 	"""Награждает специальными валютами в зависимости от редкости врага"""

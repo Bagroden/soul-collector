@@ -88,7 +88,6 @@ func _initialize_soul_sculptor() -> void:
 	soul_sculptor.position = Vector2(viewport_size.x / 2 + 500, viewport_size.y - 350)
 	
 	add_child(soul_sculptor)
-	print("Скульптор душ добавлен на позицию: ", soul_sculptor.position)
 
 func open_passive_abilities_window():
 	"""Открывает окно пассивных способностей (вызывается извне, например от NPC)"""
@@ -137,7 +136,6 @@ func _on_start_journey_button_pressed():
 	var soul_restoration_manager = get_node_or_null("/root/SoulRestorationManager")
 	if soul_restoration_manager:
 		soul_restoration_manager.restore_all_charges()
-		print("Заряды восстановления души восстановлены при входе на уровень")
 	
 	# Переходим к выбору локации
 	SceneTransition.change_scene("res://Scenes/LocationSelector.tscn")

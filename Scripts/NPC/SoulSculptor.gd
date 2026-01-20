@@ -34,14 +34,12 @@ enum QuestIndicatorState {
 var current_indicator_state: QuestIndicatorState = QuestIndicatorState.NONE
 
 func _ready():
-	print("🗿 === Инициализация Скульптора душ (SoulSculptor._ready) ===")
 	
 	# Создаем AnimatedSprite2D
 	animated_sprite = AnimatedSprite2D.new()
 	animated_sprite.name = "AnimatedSprite"
 	animated_sprite.scale = Vector2(3.0, 3.0)  # Увеличиваем в 3 раза
 	add_child(animated_sprite)
-	print("✅ AnimatedSprite2D создан, scale: ", animated_sprite.scale)
 	
 	# Загружаем и настраиваем анимацию idle
 	_setup_idle_animation()
@@ -53,8 +51,6 @@ func _ready():
 		-interaction_size / 2,  # Центрируем относительно позиции
 		interaction_size
 	)
-	print("✅ Область взаимодействия создана, размер: ", interaction_rect.size)
-	print("   Смещение от позиции: ", interaction_rect.position)
 	
 	# Сохраняем оригинальный цвет
 	original_modulate = animated_sprite.modulate
@@ -62,7 +58,6 @@ func _ready():
 	# Запускаем анимацию idle
 	if animated_sprite.sprite_frames and animated_sprite.sprite_frames.has_animation("idle"):
 		animated_sprite.play("idle")
-		print("✅ Анимация idle запущена")
 	else:
 		push_error("❌ Анимация idle не найдена!")
 	
@@ -72,7 +67,6 @@ func _ready():
 	# Создаем диалоговое окно (отложенно, чтобы родитель успел инициализироваться)
 	call_deferred("_create_dialog")
 	
-	print("🗿 === Скульптор душ инициализирован на позиции: ", global_position, " ===")
 
 func _input(event: InputEvent):
 	"""Обрабатываем события мыши вручную (т.к. Control блокирует Area2D)"""
@@ -108,16 +102,13 @@ func _setup_idle_animation():
 		var texture = load(frame_path)
 		if texture:
 			sprite_frames.add_frame("idle", texture)
-			print("✅ Кадр %d загружен: %s" % [i, frame_path])
 		else:
 			push_error("❌ Не удалось загрузить кадр: " + frame_path)
 	
 	animated_sprite.sprite_frames = sprite_frames
-	print("🎬 Анимация idle настроена, кадров: ", sprite_frames.get_frame_count("idle"))
 
 func _on_mouse_entered():
 	"""Обработчик наведения курсора"""
-	print("🖱️ Курсор наведен на Скульптора душ")
 	is_hovered = true
 	_update_highlight()
 	
@@ -126,7 +117,6 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	"""Обработчик ухода курсора"""
-	print("🖱️ Курсор ушел со Скульптора душ")
 	is_hovered = false
 	_update_highlight()
 	
@@ -137,24 +127,19 @@ func _on_mouse_exited():
 func _update_highlight():
 	"""Обновляет подсветку NPC при наведении"""
 	if not animated_sprite:
-		print("⚠️ animated_sprite не существует!")
 		return
 	
 	if is_hovered:
 		# Подсветка белым (усиленная яркость)
-		print("✨ Применяю подсветку: Color(1.5, 1.5, 1.5, 1.0)")
-		print("   Текущий modulate до подсветки: ", animated_sprite.modulate)
 		var tween = create_tween()
 		tween.tween_property(animated_sprite, "modulate", Color(1.5, 1.5, 1.5, 1.0), 0.2)
 	else:
 		# Возврат к оригинальному цвету
-		print("🔄 Возврат к оригинальному цвету: ", original_modulate)
 		var tween = create_tween()
 		tween.tween_property(animated_sprite, "modulate", original_modulate, 0.2)
 
 func _create_dialog():
 	"""Создает диалоговое окно NPC"""
-	print("💬 Создание диалогового окна...")
 	
 	var dialog_script = load("res://Scripts/UI/SoulSculptorDialog.gd")
 	if not dialog_script:
@@ -170,19 +155,16 @@ func _create_dialog():
 	var root = get_tree().current_scene
 	if root:
 		root.add_child(dialog)
-		print("✅ Диалог добавлен к ", root.name)
 		
 		# Подключаем сигналы
 		dialog.passive_activation_requested.connect(_on_passive_activation_requested)
 		dialog.ability_learning_requested.connect(_on_ability_learning_requested)
 		dialog.dialog_closed.connect(_on_dialog_closed)
-		print("✅ Сигналы диалога подключены")
 	else:
 		push_error("❌ Не удалось найти корневой узел сцены")
 
 func _on_npc_clicked():
 	"""Обработчик клика по NPC"""
-	print("🗿 Скульптор душ: Открываем диалог")
 	
 	# Проверяем первое посещение (активирует квест если это первый раз)
 	_check_first_meeting()
@@ -210,14 +192,12 @@ func _check_first_meeting() -> bool:
 	if not player_data.met_soul_sculptor:
 		player_data.met_soul_sculptor = true
 		player_data.add_quest("find_soul_urn")
-		print("🗿 Первая встреча со Скульптором душ! Квест 'find_soul_urn' активирован")
 		return true
 	
 	return false
 
 func _on_passive_activation_requested():
 	"""Обработчик запроса на открытие окна активации пассивных способностей"""
-	print("⚡ Запрос на открытие окна активации пассивных способностей")
 	
 	# Получаем CharacterPreparation и вызываем его метод
 	var char_prep = get_tree().current_scene
@@ -228,7 +208,6 @@ func _on_passive_activation_requested():
 
 func _on_ability_learning_requested():
 	"""Обработчик запроса на открытие экрана изучения способностей"""
-	print("📚 Запрос на открытие экрана изучения способностей")
 	
 	# Получаем CharacterPreparation и вызываем его метод
 	var char_prep = get_tree().current_scene
@@ -239,7 +218,6 @@ func _on_ability_learning_requested():
 
 func _on_dialog_closed():
 	"""Обработчик закрытия диалога"""
-	print("❌ Диалог закрыт")
 
 func set_unlocked(unlocked: bool):
 	"""Устанавливает доступность NPC"""
@@ -269,7 +247,6 @@ func _process(_delta: float):
 
 func _setup_quest_indicators():
 	"""Создает элементы для отображения индикаторов квестов"""
-	print("🎯 Создание системы индикаторов квестов...")
 	
 	# Создаем пульсирующее свечение
 	glow_sprite = Sprite2D.new()
@@ -305,7 +282,6 @@ func _setup_quest_indicators():
 	quest_indicator.visible = false
 	add_child(quest_indicator)
 	
-	print("✅ Система индикаторов квестов создана")
 
 func _update_quest_indicator():
 	"""Обновляет состояние индикатора квеста в зависимости от прогресса игрока"""
@@ -413,7 +389,6 @@ func _apply_indicator_state(state: QuestIndicatorState):
 			quest_indicator.visible = true
 			_start_glow_animation(Color(0.0, 1.0, 0.3, 0.4))  # Зеленое свечение
 	
-	print("🎯 Состояние индикатора изменено: ", QuestIndicatorState.keys()[state])
 
 func _start_glow_animation(glow_color: Color):
 	"""Запускает анимацию пульсирующего свечения"""

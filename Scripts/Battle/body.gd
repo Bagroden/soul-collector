@@ -454,9 +454,6 @@ func _add_random_level_stats():
 				intelligence += 1
 			"wisdom":
 				wisdom += 1
-	
-	print("Враг %s (ур. %d) получил %d случайных очков характеристик" % [display_name, level, total_points])
-	print("Итоговые характеристики: Сила=%d, Ловкость=%d, Живучесть=%d, Выносливость=%d, Интеллект=%d, Мудрость=%d" % [strength, agility, vitality, endurance, intelligence, wisdom])
 
 func test_scaling_system():
 	"""Тестирует систему масштабирования характеристик"""
