@@ -88,24 +88,24 @@ func _get_animation_name_for_ability(ability_id: String) -> String:
 			# Если не найден как брат, пробуем найти через get_tree()
 			var scene_root = get_tree().current_scene
 			if scene_root:
-				animation_manager = scene_root.get_node_or_null("AbilityAnimationManager")
-				if animation_manager and animation_manager.has_method("get_animation_for_ability"):
+				var scene_anim_mgr = scene_root.get_node_or_null("AbilityAnimationManager")
+				if scene_anim_mgr and scene_anim_mgr.has_method("get_animation_for_ability"):
 					# Сохраняем ссылку для будущих вызовов
-					ability_animation_manager = animation_manager
-					return animation_manager.get_animation_for_ability(ability_id)
+					ability_animation_manager = scene_anim_mgr
+					return scene_anim_mgr.get_animation_for_ability(ability_id)
 	
 	# Fallback: пытаемся найти через абсолютный путь
-	var animation_manager = get_node_or_null("/root/BattleManager/AbilityAnimationManager")
-	if not animation_manager:
+	var abs_anim_mgr = get_node_or_null("/root/BattleManager/AbilityAnimationManager")
+	if not abs_anim_mgr:
 		# Пробуем найти через get_tree().root
 		var root = get_tree().root
 		if root:
-			animation_manager = root.get_node_or_null("BattleManager/AbilityAnimationManager")
+			abs_anim_mgr = root.get_node_or_null("BattleManager/AbilityAnimationManager")
 	
-	if animation_manager and animation_manager.has_method("get_animation_for_ability"):
+	if abs_anim_mgr and abs_anim_mgr.has_method("get_animation_for_ability"):
 		# Сохраняем ссылку для будущих вызовов
-		ability_animation_manager = animation_manager
-		return animation_manager.get_animation_for_ability(ability_id)
+		ability_animation_manager = abs_anim_mgr
+		return abs_anim_mgr.get_animation_for_ability(ability_id)
 	
 	return ""
 
