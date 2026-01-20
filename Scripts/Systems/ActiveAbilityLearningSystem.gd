@@ -1,6 +1,5 @@
 # res://Scripts/Systems/ActiveAbilityLearningSystem.gd
 extends Node
-class_name ActiveAbilityLearningSystem
 
 ## Система изучения активных способностей врагов
 ## Игрок может изучать способности врагов, побеждая их в бою
