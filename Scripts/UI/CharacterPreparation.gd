@@ -54,6 +54,9 @@ func _ready():
 	
 	# Создаем NPC Скульптора душ
 	_initialize_soul_sculptor()
+	
+	# Создаем кнопку для открытия Книги активных способностей
+	_create_ability_book_button()
 
 func _initialize_soul_vortex() -> void:
 	"""Инициализирует анимацию вихря душ для колодца"""
@@ -88,6 +91,41 @@ func _initialize_soul_sculptor() -> void:
 	soul_sculptor.position = Vector2(viewport_size.x / 2 + 500, viewport_size.y - 350)
 	
 	add_child(soul_sculptor)
+
+func _create_ability_book_button() -> void:
+	"""Создаёт кнопку для открытия Книги активных способностей"""
+	var book_button = Button.new()
+	book_button.name = "ActiveAbilityBookButton"
+	book_button.text = "📖 Книга Способностей"
+	
+	# Позиционируем в левом верхнем углу
+	book_button.position = Vector2(20, 20)
+	book_button.custom_minimum_size = Vector2(280, 60)
+	
+	# Стилизуем кнопку
+	book_button.add_theme_font_size_override("font_size", 24)
+	book_button.add_theme_color_override("font_color", Color(1, 0.9, 0.6))
+	
+	# Подключаем сигнал
+	book_button.pressed.connect(open_active_abilities_window)
+	
+	# Добавляем на сцену
+	add_child(book_button)
+
+func open_active_abilities_window():
+	"""Открывает окно активных способностей (Книга способностей)"""
+	print("📖 Открытие Книги активных способностей...")
+	
+	# Загружаем сцену окна активных способностей
+	var active_ability_book_scene = load("res://Scenes/UI/ActiveAbilityBook.tscn")
+	if not active_ability_book_scene:
+		push_error("Не удалось загрузить сцену ActiveAbilityBook.tscn")
+		return
+	
+	# Создаем экземпляр окна
+	var active_ability_book = active_ability_book_scene.instantiate()
+	active_ability_book.z_index = 150  # Поверх всего
+	add_child(active_ability_book)
 
 func open_passive_abilities_window():
 	"""Открывает окно пассивных способностей (вызывается извне, например от NPC)"""
