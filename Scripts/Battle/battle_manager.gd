@@ -4053,14 +4053,16 @@ func _use_learned_ability(ability_id: String, slot_index: int):
 	
 	# Применяем урон к цели
 	if damage > 0:
-		var actual_damage = target.take_damage(damage, ability.damage_type)
+		var damage_result = target.take_damage(damage, ability.damage_type)
+		
+		# take_damage может вернуть словарь или число
+		var actual_damage = damage_result
+		if damage_result is Dictionary:
+			actual_damage = damage_result.get("damage", damage)
 		
 		# Показываем сообщение
-		_show_message("Вы использовали %s! Урон: %d%s" % [
-			ability.name,
-			actual_damage,
-			" (КРИТ!)" if is_crit else ""
-		], 2.0)
+		var crit_text = " (КРИТ!)" if is_crit else ""
+		_show_message("Вы использовали " + ability.name + "! Урон: " + str(int(actual_damage)) + crit_text, 2.0)
 		
 		# Проигрываем анимацию способности
 		if ability_effect_manager:
