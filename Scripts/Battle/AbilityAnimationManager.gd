@@ -19,8 +19,6 @@ func _load_animation_data() -> void:
 			# Если ресурс существует, но не является AbilityAnimationData, создаем новый
 			animation_data = AbilityAnimationData.new()
 			_save_animation_data()
-		else:
-			for key in animation_data.ability_animations:
 	else:
 		# Если ресурс не существует, создаем новый
 		animation_data = AbilityAnimationData.new()
@@ -61,8 +59,6 @@ func play_ability_animation(visual_node: Node, ability_id: String) -> bool:
 			if visual_node.sprite_frames.has_animation(animation_name):
 				visual_node.play_animation(animation_name)
 				return true
-			else:
-		else:
 	
 	# Fallback: используем стандартную атаку
 	if visual_node.has_method("play_attack"):
