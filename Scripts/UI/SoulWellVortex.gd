@@ -315,8 +315,6 @@ func _update_target_particle_count() -> void:
 	if has_node("/root/SoulShard"):
 		var soul_shards_manager = get_node("/root/SoulShard")
 		soul_shards = soul_shards_manager.get_soul_shards()
-	else:
-		pass
 	
 	# Определяем количество частиц по таблице
 	target_particle_count = 0
@@ -402,4 +400,3 @@ func cleanup() -> void:
 	for child in get_children():
 		if child is Sprite2D:
 			child.queue_free()
-

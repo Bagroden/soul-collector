@@ -199,9 +199,6 @@ func _show_slide(index: int):
 	var texture = _load_slide_image(slide.image)
 	if texture:
 		image_display.texture = texture
-	else:
-		# Если изображения нет, используем цветной прямоугольник как placeholder
-		pass
 	
 	# Воспроизводим озвучку слайда и получаем реальную длительность аудио
 	var audio_duration = _play_slide_audio(slide)
@@ -277,10 +274,6 @@ func _apply_cinematic_effect(tween: Tween, effect: CinematicEffect, duration: fl
 			# Панорама вниз + легкий zoom чтобы не было черных полос
 			image_display.scale = Vector2(1.15, 1.15)  # Увеличиваем базовый масштаб
 			tween.tween_property(image_display, "position:y", -40.0, duration).from(40.0)
-		
-		CinematicEffect.NONE:
-			# Без эффекта
-			pass
 
 func _fade_out_slide():
 	"""Анимация исчезновения слайда"""
