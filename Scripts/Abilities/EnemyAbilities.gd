@@ -336,3 +336,13 @@ func get_ability_for_enemy(enemy_name: String) -> EnemyAbility:
 func has_ability(enemy_name: String) -> bool:
 	"""Проверяет, есть ли способность у врага"""
 	return enemy_name in enemy_abilities
+
+func get_ability_by_id(ability_id: String) -> EnemyAbility:
+	"""Возвращает способность по её ID"""
+	for enemy_name in enemy_abilities:
+		var ability = enemy_abilities[enemy_name]
+		if ability.id == ability_id:
+			return ability
+	
+	# Если не найдена, возвращаем заглушку
+	return enemy_abilities.get("Заглушка", null)

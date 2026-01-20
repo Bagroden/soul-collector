@@ -144,6 +144,9 @@ func _ready():
 	# Инициализируем боевую музыку
 	_initialize_battle_music()
 	
+	# Инициализируем UI слотов способностей
+	_initialize_ability_slots_ui()
+	
 	# Счетчик осколков душ за забег сбрасывается только в начале нового забега
 	# (в MainMenu.gd при нажатии "Новая игра")
 
@@ -204,6 +207,11 @@ func start_new_round():
 	for enemy in enemy_nodes:
 		if is_instance_valid(enemy) and enemy.has_method("reset_round_counters"):
 			enemy.reset_round_counters(current_round)
+	
+	# Уменьшаем кулдауны изученных способностей
+	if AbilitySlotManager:
+		AbilitySlotManager.reduce_cooldowns()
+		_update_ability_slots_ui()
 	
 	# Снимаем эффект защиты в начале нового раунда
 	if player_node and player_node.has_effect("defend"):
@@ -2392,6 +2400,10 @@ func _on_enemy_died():
 
 func _handle_victory():
 	"""Обрабатывает победу: награды, прогресс способностей, сообщения"""
+	# Сбрасываем кулдауны после победы
+	if AbilitySlotManager:
+		AbilitySlotManager.reset_cooldowns()
+	
 	# Собираем прогресс способностей от ВСЕХ врагов
 	var ability_progress = []
 	
@@ -3862,6 +3874,321 @@ func _initialize_battle_music():
 		music_player.play_music(battle_music, true, true)  # fade_in=true, crossfade=true
 	else:
 		print("Музыкальный файл не найден")
+
+func _initialize_ability_slots_ui():
+	"""Инициализирует UI для слотов активных способностей"""
+	if not AbilitySlotManager:
+		return
+	
+	# Создаем контейнер для слотов способностей
+	var slots_container = HBoxContainer.new()
+	slots_container.name = "AbilitySlotsContainer"
+	slots_container.add_theme_constant_override("separation", 15)
+	
+	# Позиционируем внизу по центру экрана
+	slots_container.anchor_left = 0.5
+	slots_container.anchor_right = 0.5
+	slots_container.anchor_top = 1.0
+	slots_container.anchor_bottom = 1.0
+	slots_container.offset_left = -350  # Центрируем (4 кнопки * ~175px)
+	slots_container.offset_right = 350
+	slots_container.offset_top = -120  # Отступ снизу
+	slots_container.offset_bottom = -20
+	slots_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	slots_container.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	
+	ui.add_child(slots_container)
+	
+	# Создаем 4 слота
+	for slot_index in range(4):
+		var slot_button = _create_ability_slot_button(slot_index)
+		slots_container.add_child(slot_button)
+	
+	# Обновляем кнопки при изменении слотов
+	if AbilitySlotManager.slots_updated.is_connected(_update_ability_slots_ui):
+		AbilitySlotManager.slots_updated.disconnect(_update_ability_slots_ui)
+	AbilitySlotManager.slots_updated.connect(_update_ability_slots_ui)
+	
+	# Первоначальное обновление
+	_update_ability_slots_ui()
+
+func _create_ability_slot_button(slot_index: int) -> Button:
+	"""Создаёт кнопку слота способности"""
+	var button = Button.new()
+	button.name = "AbilitySlot_%d" % slot_index
+	button.custom_minimum_size = Vector2(160, 90)
+	
+	# Стиль кнопки
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.2, 0.2, 0.3, 0.9)
+	style.border_color = Color(0.5, 0.5, 0.6)
+	style.border_width_left = 2
+	style.border_width_top = 2
+	style.border_width_right = 2
+	style.border_width_bottom = 2
+	style.corner_radius_top_left = 8
+	style.corner_radius_top_right = 8
+	style.corner_radius_bottom_left = 8
+	style.corner_radius_bottom_right = 8
+	button.add_theme_stylebox_override("normal", style)
+	
+	# Настройка текста
+	button.add_theme_font_size_override("font_size", 18)
+	button.text = "[%d]\nПусто" % (slot_index + 1)
+	
+	# Подключаем сигнал
+	button.pressed.connect(_on_ability_slot_pressed.bind(slot_index))
+	
+	return button
+
+func _update_ability_slots_ui():
+	"""Обновляет отображение слотов способностей"""
+	if not AbilitySlotManager:
+		return
+	
+	var slots_container = ui.get_node_or_null("AbilitySlotsContainer")
+	if not slots_container:
+		return
+	
+	# Обновляем каждую кнопку
+	for slot_index in range(4):
+		var button = slots_container.get_node_or_null("AbilitySlot_%d" % slot_index)
+		if not button:
+			continue
+		
+		var slot_info = AbilitySlotManager.get_slot_info(slot_index)
+		
+		if slot_info["is_empty"]:
+			# Пустой слот
+			button.text = "[%d]\nПусто" % (slot_index + 1)
+			button.disabled = true
+			button.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+		else:
+			# Занятый слот
+			var ability_name = slot_info["ability_name"]
+			var cooldown = slot_info["cooldown"]
+			
+			if cooldown > 0:
+				# На кулдауне
+				button.text = "[%d] %s\n⏱️ %d" % [slot_index + 1, ability_name, cooldown]
+				button.disabled = true
+				button.add_theme_color_override("font_color", Color(0.7, 0.5, 0.5))
+			else:
+				# Доступна к использованию
+				button.text = "[%d]\n%s" % [slot_index + 1, ability_name]
+				button.disabled = false
+				button.add_theme_color_override("font_color", Color(1, 1, 1))
+
+func _on_ability_slot_pressed(slot_index: int):
+	"""Обработчик нажатия на слот способности"""
+	if not AbilitySlotManager:
+		return
+	
+	var slot_info = AbilitySlotManager.get_slot_info(slot_index)
+	
+	if slot_info["is_empty"]:
+		_show_message("Слот пуст! Установите способность в Книге способностей", 2.0)
+		return
+	
+	if slot_info["is_on_cooldown"]:
+		_show_message("Способность на перезарядке! Осталось: %d раунд(ов)" % slot_info["cooldown"], 2.0)
+		return
+	
+	# Используем способность
+	_use_learned_ability(slot_info["ability_id"], slot_index)
+
+func _use_learned_ability(ability_id: String, slot_index: int):
+	"""Использует изученную активную способность врага"""
+	
+	if state != "player_turn":
+		_show_message("Не ваш ход!", 1.5)
+		return
+	
+	# Проверяем очки действий
+	if not player_node.has_action_points():
+		_show_message("Нет очков действий!", 1.5)
+		return
+	
+	# Получаем цель
+	var target = get_current_target()
+	if not target or not is_instance_valid(target):
+		_show_message("Нет доступных целей!", 1.5)
+		return
+	
+	# Получаем данные способности из enemy_abilities
+	if not enemy_abilities:
+		push_error("enemy_abilities не инициализирован!")
+		return
+	
+	var ability = enemy_abilities.get_ability_by_id(ability_id)
+	if not ability:
+		push_error("Способность '%s' не найдена в EnemyAbilities!" % ability_id)
+		return
+	
+	# Проверяем ресурсы
+	if ability.mp_cost > 0 and player_node.mp < ability.mp_cost:
+		_show_message("Недостаточно маны! Требуется: %d" % ability.mp_cost, 2.0)
+		return
+	
+	if ability.stamina_cost > 0 and player_node.stamina < ability.stamina_cost:
+		_show_message("Недостаточно выносливости! Требуется: %d" % ability.stamina_cost, 2.0)
+		return
+	
+	# Тратим ресурсы
+	if ability.mp_cost > 0:
+		player_node.mp -= ability.mp_cost
+	if ability.stamina_cost > 0:
+		player_node.stamina -= ability.stamina_cost
+	
+	# Тратим очко действий
+	player_node.spend_action_point()
+	
+	# Вычисляем урон на основе формулы способности врага
+	var damage = _calculate_learned_ability_damage(ability, player_node)
+	
+	# Проверяем крит
+	var is_crit = _check_crit(player_node, ability.crit_chance_bonus)
+	if is_crit:
+		damage = int(damage * 1.5)  # Критический урон x1.5
+	
+	# Применяем урон к цели
+	if damage > 0:
+		var actual_damage = target.take_damage(damage, ability.damage_type)
+		
+		# Показываем сообщение
+		_show_message("Вы использовали %s! Урон: %d%s" % [
+			ability.name,
+			actual_damage,
+			" (КРИТ!)" if is_crit else ""
+		], 2.0)
+		
+		# Проигрываем анимацию способности
+		if ability_effect_manager:
+			ability_effect_manager.play_ability_effect_on_target(
+				ability_id,
+				player_node,
+				target,
+				ability.damage_type
+			)
+	
+	# Устанавливаем кулдаун
+	if ability.cooldown > 0:
+		AbilitySlotManager.set_cooldown(ability_id, ability.cooldown - 1)  # -1 т.к. текущий раунд уже считается
+	
+	# Обновляем UI слотов
+	_update_ability_slots_ui()
+	
+	# Проверяем смерть врага
+	if target.hp <= 0:
+		await _handle_enemy_death(target)
+		if _check_all_enemies_defeated():
+			return
+	
+	# Переходим к ходу врага
+	await get_tree().create_timer(0.5).timeout
+	_set_enemy_turn()
+
+func _calculate_learned_ability_damage(ability: EnemyAbility, caster: Node2D) -> int:
+	"""Вычисляет урон изученной способности на основе характеристик игрока"""
+	
+	var base_damage = 0
+	var P = caster.get("P") if caster.has_method("get") else 0
+	
+	# Формулы урона для каждой способности (из EnemyAbilities.gd)
+	match ability.id:
+		"rat_bite":
+			# Урон = сила + ловкость * 1.5
+			base_damage = caster.strength + int(caster.agility * 1.5)
+		
+		"slime_acid_blast", "rotten_slime_blast":
+			# Урон = сила + живучесть
+			base_damage = caster.strength + caster.vitality
+			if ability.id == "rotten_slime_blast":
+				base_damage = int((caster.strength + caster.vitality) / 2.0) + P
+		
+		"bat_swoop":
+			# Урон = сила + ловкость * 1.5
+			base_damage = caster.strength + int(caster.agility * 1.5)
+		
+		"double_strike":
+			# Два удара = (сила + ловкость) / 1.5 * 2
+			base_damage = int((caster.strength + caster.agility) / 1.5) * 2
+		
+		"poison_strike":
+			# Урон = ловкость * 2.5
+			base_damage = int(caster.agility * 2.5)
+		
+		"magic_arrows":
+			# Количество стрел = 1 + интеллект / 15, урон каждой = интеллект
+			var arrow_count = 1 + int(caster.intelligence / 15)
+			base_damage = caster.intelligence * arrow_count
+		
+		"crossbow_shot":
+			# Урон = сила + ловкость * 1.8
+			base_damage = caster.strength + int(caster.agility * 1.8)
+		
+		"slashing_strike":
+			# Урон = сила + ловкость * 1.2
+			base_damage = caster.strength + int(caster.agility * 1.2)
+		
+		"tombstone":
+			# Урон = интеллект * 1.5 + мудрость
+			base_damage = int(caster.intelligence * 1.5) + caster.wisdom
+		
+		"crushing_hammer":
+			# Два удара молотом
+			var hit1 = int(caster.strength * 1.5) + caster.vitality
+			var hit2 = int(caster.strength * 2.0) + int(caster.vitality * 1.3)
+			base_damage = hit1 + hit2
+		
+		"orc_arrow_shot":
+			# Урон = сила + ловкость * 1.6
+			base_damage = caster.strength + int(caster.agility * 1.6)
+		
+		"orc_backstab":
+			# Урон = (сила + ловкость) * 2.0
+			base_damage = int((caster.strength + caster.agility) * 2.0)
+		
+		"orc_berserker_strike":
+			# Урон = (сила * 2.0 + живучесть)
+			base_damage = int(caster.strength * 2.0) + caster.vitality
+		
+		"orc_spirit_blast":
+			# Урон = интеллект * 2.0 + мудрость * 1.5
+			base_damage = int(caster.intelligence * 2.0) + int(caster.wisdom * 1.5)
+		
+		"shadow_spikes":
+			# Урон = (ловкость + интеллект) * 2
+			base_damage = int((caster.agility + caster.intelligence) * 2)
+		
+		"alkara_dark_blast":
+			# Урон = интеллект * 2.5
+			base_damage = int(caster.intelligence * 2.5)
+		
+		"curse_blast":
+			# Урон = интеллект + мудрость * 1.3
+			base_damage = caster.intelligence + int(caster.wisdom * 1.3)
+		
+		"executioner_strike":
+			# Два удара = (сила + ловкость * 1.5) * 2
+			base_damage = (caster.strength + int(caster.agility * 1.5)) * 2
+		
+		"tharnok_crushing_strike":
+			# Два удара
+			var first_hit = caster.strength + caster.vitality
+			var second_hit = caster.strength + int(caster.vitality * 1.7)
+			base_damage = first_hit + second_hit
+		
+		"armor_strike":
+			# Урон = (сила + живучесть) + P + защита × 2
+			var defense = caster.get("defense") if caster.has_method("get") else 0
+			base_damage = caster.strength + caster.vitality + P + (defense * 2)
+		
+		_:
+			# Базовый урон для неизвестных способностей
+			base_damage = caster.strength + caster.intelligence
+	
+	return max(base_damage, 1)  # Минимум 1 урон
 
 func _show_defeat_screen():
 	"""Показывает экран поражения"""

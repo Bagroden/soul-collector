@@ -29,6 +29,10 @@ func _ready():
 	if ActiveAbilityLearningSystem:
 		ActiveAbilityLearningSystem.progress_updated.connect(_on_progress_updated)
 		ActiveAbilityLearningSystem.ability_learned.connect(_on_ability_learned)
+	
+	# Подключаемся к сигналам менеджера слотов
+	if AbilitySlotManager:
+		AbilitySlotManager.slots_updated.connect(_on_slots_updated)
 
 func _populate_ability_list():
 	"""Заполняет список способностей"""
@@ -171,6 +175,49 @@ func _create_ability_card(ability_id: String, progress_data: Dictionary) -> Cont
 		learn_button.pressed.connect(_on_learn_button_pressed.bind(ability_id))
 		progress_container.add_child(learn_button)
 	
+	# Управление слотами (только для изученных способностей)
+	if progress_data["is_learned"] and AbilitySlotManager:
+		var slot_container = HBoxContainer.new()
+		slot_container.add_theme_constant_override("separation", 5)
+		vbox.add_child(slot_container)
+		
+		var slot_label = Label.new()
+		slot_label.text = "Слот:"
+		slot_label.add_theme_font_size_override("font_size", 18)
+		slot_container.add_child(slot_label)
+		
+		# Проверяем, в каком слоте установлена способность
+		var current_slot = AbilitySlotManager.get_slot_index_for_ability(ability_id)
+		
+		# Кнопки для 4 слотов
+		for slot_index in range(4):
+			var slot_button = Button.new()
+			slot_button.custom_minimum_size = Vector2(60, 40)
+			slot_button.text = str(slot_index + 1)
+			slot_button.add_theme_font_size_override("font_size", 20)
+			
+			# Если способность в этом слоте - подсвечиваем
+			if current_slot == slot_index:
+				slot_button.add_theme_color_override("font_color", Color(0.3, 1, 0.3))
+				slot_button.text = "✓ " + str(slot_index + 1)
+			else:
+				# Проверяем, занят ли слот
+				if not AbilitySlotManager.is_slot_empty(slot_index):
+					slot_button.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+			
+			slot_button.pressed.connect(_on_slot_button_pressed.bind(ability_id, slot_index))
+			slot_container.add_child(slot_button)
+		
+		# Кнопка "Убрать из слота"
+		if current_slot != -1:
+			var remove_button = Button.new()
+			remove_button.text = "✕"
+			remove_button.custom_minimum_size = Vector2(50, 40)
+			remove_button.add_theme_font_size_override("font_size", 20)
+			remove_button.add_theme_color_override("font_color", Color(1, 0.5, 0.5))
+			remove_button.pressed.connect(_on_remove_from_slot_pressed.bind(ability_id))
+			slot_container.add_child(remove_button)
+	
 	return card
 
 func _on_filter_button_pressed(filter: String):
@@ -222,4 +269,25 @@ func _on_ability_learned(ability_id: String, ability_name: String):
 	print("✨ Способность '%s' изучена!" % ability_name)
 	
 	# Обновляем список
+	_populate_ability_list()
+
+func _on_slot_button_pressed(ability_id: String, slot_index: int):
+	"""Обработчик нажатия кнопки слота"""
+	if AbilitySlotManager:
+		if AbilitySlotManager.set_slot(slot_index, ability_id):
+			# Обновляем список для отображения изменений
+			_populate_ability_list()
+
+func _on_remove_from_slot_pressed(ability_id: String):
+	"""Обработчик удаления способности из слота"""
+	if AbilitySlotManager:
+		var slot_index = AbilitySlotManager.get_slot_index_for_ability(ability_id)
+		if slot_index != -1:
+			AbilitySlotManager.clear_slot(slot_index)
+			# Обновляем список
+			_populate_ability_list()
+
+func _on_slots_updated():
+	"""Обработчик обновления слотов"""
+	# Обновляем список при изменении слотов
 	_populate_ability_list()
