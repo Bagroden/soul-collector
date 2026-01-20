@@ -1501,6 +1501,7 @@ func _return_to_main_menu_music():
 		if main_menu_music:
 			music_player.play_music(main_menu_music, true, true)  # fade_in=true, crossfade=true
 	else:
+		pass
 
 func _create_test_arena_manually():
 	"""Создает тестовую арену вручную, если её нет в LocationManager"""
