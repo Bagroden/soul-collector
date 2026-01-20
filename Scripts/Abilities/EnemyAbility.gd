@@ -425,7 +425,7 @@ func use_ability(owner: Node, _target: Node) -> Dictionary:
 			"is_crit": acid_crit,
 			"damage_type": damage_type,
 			"message": owner.display_name + " использует " + name + "!",
-			"acid_blast": true,  # Флаг для battle_manager
+			"slime_acid_blast": true,  # Флаг для battle_manager
 			"reduce_armor": 5  # Снижение брони на 5 единиц
 		}
 	

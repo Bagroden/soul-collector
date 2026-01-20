@@ -2637,6 +2637,10 @@ func _on_enemy_attacked(amount):
 	if attacked_enemy and amount > 0:
 		_flash_white(attacked_enemy)
 		# Анимация hurt теперь вызывается автоматически в take_damage в body.gd
+		
+		# Воспроизводим звук получения урона врагом
+		if SoundManager:
+			SoundManager.play_sound("Hit1", -5.0)
 	
 	# Получаем исходный урон из контекста атаки (от игрока)
 	var original_damage = 0
@@ -4043,43 +4047,20 @@ func _use_learned_ability(ability_id: String, slot_index: int):
 	# Тратим очко действий
 	player_node.spend_action_point()
 	
-	# Создаем призрачную анимацию врага (трансформация игрока)
-	await _play_phantom_enemy_animation(ability_id, ability.name)
+	# Используем способность, чтобы получить урон И все дополнительные эффекты (кровотечение, снижение брони и т.д.)
+	var ability_result = ability.use_ability(player_node, target)
 	
-	# Вычисляем урон на основе формулы способности врага
-	var damage = _calculate_learned_ability_damage(ability, player_node)
+	if not ability_result.get("success", false):
+		_show_message("Ошибка использования способности!", 1.5)
+		return
 	
-	# Проверяем крит
-	var is_crit = player_node.is_critical_hit()
-	if is_crit:
-		damage = int(damage * 1.5)  # Критический урон x1.5
+	var damage = ability_result.get("damage", 0)
+	var is_crit = ability_result.get("is_crit", false)
 	
-	# Применяем урон к цели
-	if damage > 0:
-		var damage_result = target.take_damage(damage, ability.damage_type)
-		
-		# take_damage может вернуть словарь или число
-		var actual_damage = damage_result
-		if damage_result is Dictionary:
-			actual_damage = damage_result.get("damage", damage)
-		
-		# Приводим к целому числу
-		var damage_value = 0
-		if actual_damage is int or actual_damage is float:
-			damage_value = int(actual_damage)
-		else:
-			damage_value = int(str(actual_damage).to_float())
-		
-		# Показываем сообщение
-		var crit_text = " (КРИТ!)" if is_crit else ""
-		_show_message("Вы использовали " + ability.name + "! Урон: " + str(damage_value) + crit_text, 2.0)
-		
-		# Проигрываем анимацию способности
-		if ability_effect_manager:
-			ability_effect_manager.play_ability_effect_on_target(
-				target,
-				ability_id
-			)
+	print("💫 Используем изученную способность: %s | Урон: %d | Крит: %s | Эффекты: %s" % [ability.name, damage, is_crit, ability_result])
+	
+	# Создаем призрачную анимацию врага + эффект атаки + применение урона + эффекты синхронизированно
+	await _play_phantom_enemy_animation(ability_id, ability.name, target, damage, ability.damage_type, is_crit, ability_result)
 	
 	# Устанавливаем кулдаун
 	if ability.cooldown > 0:
@@ -4207,7 +4188,7 @@ func _calculate_learned_ability_damage(ability: EnemyAbility, caster: Node2D) ->
 	
 	return max(base_damage, 1)  # Минимум 1 урон
 
-func _play_phantom_enemy_animation(ability_id: String, ability_name: String) -> void:
+func _play_phantom_enemy_animation(ability_id: String, ability_name: String, target: Node2D = null, damage: int = 0, damage_type: String = "", is_crit: bool = false, ability_result: Dictionary = {}) -> void:
 	"""Создаёт призрачную анимацию врага при использовании его способности"""
 	
 	print("👻 === НАЧАЛО ПРИЗРАЧНОЙ ТРАНСФОРМАЦИИ ===")
@@ -4277,20 +4258,23 @@ func _play_phantom_enemy_animation(ability_id: String, ability_name: String) -> 
 	temp_enemy.queue_free()
 	
 	# Создаём призрачный спрайт с правильным масштабом
-	_create_phantom_sprite(sprite_frames, ability_name, enemy_visual_scale)
+	await _create_phantom_sprite(sprite_frames, ability_name, enemy_visual_scale, ability_id, target, damage, damage_type, is_crit, ability_result)
 
-func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String, enemy_visual_scale: Vector2 = Vector2(1, 1)) -> void:
-	"""Создаёт и проигрывает призрачный спрайт"""
+func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String, enemy_visual_scale: Vector2 = Vector2(1, 1), ability_id: String = "", target: Node2D = null, damage: int = 0, damage_type: String = "", is_crit: bool = false, ability_result: Dictionary = {}) -> void:
+	"""Создаёт и проигрывает призрачный спрайт с трансформацией через световую вспышку"""
 	
-	print("👻 Создаём призрачный спрайт...")
+	print("👻 Создаём призрачный спрайт с световой трансформацией...")
 	
-	# СКРЫВАЕМ ИГРОКА НА ВРЕМЯ ТРАНСФОРМАЦИИ
+	# Получаем визуал игрока
 	var player_visual = player_node.get_node_or_null("Visual")
 	var player_was_visible = true
 	if player_visual:
 		player_was_visible = player_visual.visible
-		player_visual.visible = false
-		print("👻 Визуал игрока скрыт")
+	
+	# Сохраняем исходные параметры игрока
+	var original_player_scale = player_visual.scale if player_visual else Vector2.ONE
+	var original_player_modulate = player_visual.modulate if player_visual else Color.WHITE
+	var original_player_self_modulate = player_visual.self_modulate if player_visual else Color.WHITE
 	
 	# Создаём призрачный спрайт
 	var phantom = AnimatedSprite2D.new()
@@ -4298,36 +4282,83 @@ func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String, e
 	phantom.sprite_frames = sprite_frames
 	phantom.z_index = 150  # Поверх игрока
 	
-	# ПРАВИЛЬНЫЙ масштаб на основе врага + враги в бою умножаются на 3.0 + увеличиваем на 20%
-	# enemy_visual_scale - это scale из Visual компонента врага
-	# 3.0 - это scale который применяется при спавне врага в battle_manager
-	# 1.2 - увеличиваем на 20% для эффекта
+	# ПРАВИЛЬНЫЙ масштаб на основе врага
 	var base_scale = enemy_visual_scale * 3.0 * 1.2
 	phantom.scale = base_scale
 	
 	print("👻 Scale Visual врага: %s" % str(enemy_visual_scale))
-	print("👻 Итоговый масштаб призрака: %s (враг_scale * 3.0 * 1.2)" % str(phantom.scale))
+	print("👻 Итоговый масштаб призрака: %s (враг_scale * 3.0 * 1.2)" % str(base_scale))
 	
-	# ПРИЗРАЧНЫЙ ЭФФЕКТ КАК У ГГ - яркий бирюзовый/cyan с высокой насыщенностью
-	phantom.modulate = Color(0.3, 1.0, 1.0, 0.8)  # Яркий cyan как у главного героя
+	# ПРИЗРАЧНЫЙ ЭФФЕКТ - начинаем с полной прозрачности
+	phantom.modulate = Color(0.3, 1.0, 1.0, 0.0)  # Полностью прозрачный
+	phantom.self_modulate = Color(1.2, 1.8, 2.2, 1.0)
 	
-	# Добавляем свечение для усиления эффекта
-	phantom.self_modulate = Color(1.2, 1.8, 2.2, 1.0)  # Усиленное голубое свечение
+	# Позиционируем на месте игрока (с смещением вниз для выравнивания)
+	phantom.global_position = player_node.global_position + Vector2(0, 30)
 	
-	# Позиционируем на месте игрока
-	phantom.global_position = player_node.global_position
-	
-	print("👻 Позиция призрака: %s" % str(phantom.global_position))
-	print("👻 Цвет призрака: %s" % str(phantom.modulate))
-	
-	# Добавляем в GameWorld
+	# Добавляем призрак на сцену
 	var game_world = get_node_or_null("GameWorld")
 	if game_world:
 		game_world.add_child(phantom)
-		print("👻 Призрак добавлен в GameWorld")
 	else:
 		add_child(phantom)
-		print("👻 Призрак добавлен в battle_manager")
+	
+	# Создаём белую вспышку (ColorRect на весь экран)
+	var flash = ColorRect.new()
+	flash.name = "LightFlash"
+	flash.color = Color(1, 1, 1, 0)  # Белый, полностью прозрачный
+	flash.z_index = 200  # Поверх всего
+	# Делаем огромным, чтобы покрыть весь экран
+	flash.position = Vector2(-2000, -2000)
+	flash.size = Vector2(4000, 4000)
+	
+	if game_world:
+		game_world.add_child(flash)
+	else:
+		add_child(flash)
+	
+	# === ФАЗА 1: НАРАСТАНИЕ СВЕТА И ВСПЫШКА ===
+	print("👻 Фаза 1: Игрок светится и готовится к трансформации...")
+	
+	if player_visual:
+		# Игрок начинает светиться всё ярче
+		var glow_tween = create_tween()
+		glow_tween.set_parallel(true)
+		glow_tween.tween_property(player_visual, "self_modulate", Color(3.0, 3.0, 3.5, 1.0), 0.3)  # Яркое свечение
+		await glow_tween.finished
+		
+		# ЯРКАЯ ВСПЫШКА!
+		print("👻 💥 ВСПЫШКА!")
+		var flash_tween = create_tween()
+		flash_tween.tween_property(flash, "color:a", 0.9, 0.1)  # Быстрая яркая вспышка
+		
+		# В момент пика вспышки меняем спрайты
+		await get_tree().create_timer(0.05).timeout
+		player_visual.visible = false
+		phantom.modulate.a = 0.85  # Призрак появляется
+		
+		await flash_tween.finished
+		
+		# Вспышка быстро спадает
+		var fade_flash = create_tween()
+		fade_flash.tween_property(flash, "color:a", 0.0, 0.2)
+		await fade_flash.finished
+	else:
+		# Если нет игрока, просто вспышка и появление
+		var flash_tween = create_tween()
+		flash_tween.tween_property(flash, "color:a", 0.9, 0.1)
+		await get_tree().create_timer(0.05).timeout
+		phantom.modulate.a = 0.85
+		await flash_tween.finished
+		
+		var fade_flash = create_tween()
+		fade_flash.tween_property(flash, "color:a", 0.0, 0.2)
+		await fade_flash.finished
+	
+	# Удаляем вспышку
+	flash.queue_free()
+	
+	print("👻 Трансформация завершена! Призрак материализован")
 	
 	# Проверяем доступные анимации
 	print("👻 Доступные анимации:")
@@ -4335,17 +4366,85 @@ func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String, e
 	for anim_name in animations:
 		print("  - %s" % anim_name)
 	
-	# Проигрываем анимацию атаки
+	# === ФАЗА 2: АНИМАЦИЯ АТАКИ ===
+	print("👻 Фаза 2: Анимация атаки призрака")
+	
 	if sprite_frames.has_animation("attack"):
 		print("👻 Проигрываем анимацию 'attack'")
 		phantom.play("attack")
 		
-		# Ждём завершения анимации
+		# Небольшая задержка, чтобы эффект начался в момент "удара"
+		await get_tree().create_timer(0.25).timeout
+		
+		# Проигрываем эффект способности в момент удара
+		if ability_id and target and ability_effect_manager:
+			print("👻 🎬 Проигрываем эффект способности: %s" % ability_id)
+			ability_effect_manager.play_ability_effect_on_target(target, ability_id)
+		
+		# ПРИМЕНЯЕМ УРОН В МОМЕНТ ЭФФЕКТА
+		if damage > 0 and target:
+			var damage_result = target.take_damage(damage, damage_type)
+			
+			# take_damage может вернуть словарь или число
+			var actual_damage = damage_result
+			if damage_result is Dictionary:
+				actual_damage = damage_result.get("damage", damage)
+			
+			# Приводим к целому числу
+			var damage_value = 0
+			if actual_damage is int or actual_damage is float:
+				damage_value = int(actual_damage)
+			else:
+				damage_value = int(str(actual_damage).to_float())
+			
+			# Показываем сообщение
+			var crit_text = " (КРИТ!)" if is_crit else ""
+			_show_message("Вы использовали " + ability_name + "! Урон: " + str(damage_value) + crit_text, 2.0)
+			
+			print("👻 💥 Урон применён: %d%s" % [damage_value, crit_text])
+			
+			# ПРИМЕНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ СПОСОБНОСТИ (кровотечение, снижение брони и т.д.)
+			_apply_learned_ability_effects(ability_result, target, player_node)
+		
 		await phantom.animation_finished
 		print("👻 Анимация 'attack' завершена")
 	elif sprite_frames.has_animation("Attack"):
 		print("👻 Проигрываем анимацию 'Attack'")
 		phantom.play("Attack")
+		
+		# Небольшая задержка, чтобы эффект начался в момент "удара"
+		await get_tree().create_timer(0.25).timeout
+		
+		# Проигрываем эффект способности в момент удара
+		if ability_id and target and ability_effect_manager:
+			print("👻 🎬 Проигрываем эффект способности: %s" % ability_id)
+			ability_effect_manager.play_ability_effect_on_target(target, ability_id)
+		
+		# ПРИМЕНЯЕМ УРОН В МОМЕНТ ЭФФЕКТА
+		if damage > 0 and target:
+			var damage_result = target.take_damage(damage, damage_type)
+			
+			# take_damage может вернуть словарь или число
+			var actual_damage = damage_result
+			if damage_result is Dictionary:
+				actual_damage = damage_result.get("damage", damage)
+			
+			# Приводим к целому числу
+			var damage_value = 0
+			if actual_damage is int or actual_damage is float:
+				damage_value = int(actual_damage)
+			else:
+				damage_value = int(str(actual_damage).to_float())
+			
+			# Показываем сообщение
+			var crit_text = " (КРИТ!)" if is_crit else ""
+			_show_message("Вы использовали " + ability_name + "! Урон: " + str(damage_value) + crit_text, 2.0)
+			
+			print("👻 💥 Урон применён: %d%s" % [damage_value, crit_text])
+			
+			# ПРИМЕНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ СПОСОБНОСТИ (кровотечение, снижение брони и т.д.)
+			_apply_learned_ability_effects(ability_result, target, player_node)
+		
 		await phantom.animation_finished
 		print("👻 Анимация 'Attack' завершена")
 	else:
@@ -4354,18 +4453,126 @@ func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String, e
 			var first_anim = animations[0]
 			print("👻 Проигрываем первую анимацию: %s" % first_anim)
 			phantom.play(first_anim)
-			await get_tree().create_timer(0.5).timeout
+			
+			# Небольшая задержка, чтобы эффект начался в момент "удара"
+			await get_tree().create_timer(0.25).timeout
+			
+			# Проигрываем эффект способности в момент удара
+			if ability_id and target and ability_effect_manager:
+				print("👻 🎬 Проигрываем эффект способности: %s" % ability_id)
+				ability_effect_manager.play_ability_effect_on_target(target, ability_id)
+			
+			# ПРИМЕНЯЕМ УРОН В МОМЕНТ ЭФФЕКТА
+			if damage > 0 and target:
+				var damage_result = target.take_damage(damage, damage_type)
+				
+				# take_damage может вернуть словарь или число
+				var actual_damage = damage_result
+				if damage_result is Dictionary:
+					actual_damage = damage_result.get("damage", damage)
+				
+				# Приводим к целому числу
+				var damage_value = 0
+				if actual_damage is int or actual_damage is float:
+					damage_value = int(actual_damage)
+				else:
+					damage_value = int(str(actual_damage).to_float())
+				
+				# Показываем сообщение
+				var crit_text = " (КРИТ!)" if is_crit else ""
+				_show_message("Вы использовали " + ability_name + "! Урон: " + str(damage_value) + crit_text, 2.0)
+				
+				print("👻 💥 Урон применён: %d%s" % [damage_value, crit_text])
+				
+				# ПРИМЕНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ СПОСОБНОСТИ (кровотечение, снижение брони и т.д.)
+				_apply_learned_ability_effects(ability_result, target, player_node)
+			
+			await get_tree().create_timer(0.25).timeout
 		else:
 			await get_tree().create_timer(0.5).timeout
+	
+	# === ФАЗА 3: ОБРАТНАЯ ТРАНСФОРМАЦИЯ ЧЕРЕЗ ВСПЫШКУ ===
+	print("👻 Фаза 3: Обратная трансформация в героя...")
+	
+	if player_visual and player_was_visible:
+		# Создаём новую вспышку для обратного превращения
+		var flash_back = ColorRect.new()
+		flash_back.name = "LightFlashBack"
+		flash_back.color = Color(1, 1, 1, 0)
+		flash_back.z_index = 200
+		flash_back.position = Vector2(-2000, -2000)
+		flash_back.size = Vector2(4000, 4000)
+		
+		if game_world:
+			game_world.add_child(flash_back)
+		else:
+			add_child(flash_back)
+		
+		# Призрак начинает светиться
+		print("👻 Призрак светится перед обратным превращением...")
+		var glow_back_tween = create_tween()
+		glow_back_tween.tween_property(phantom, "self_modulate", Color(3.0, 3.5, 4.0, 1.0), 0.25)
+		await glow_back_tween.finished
+		
+		# ОБРАТНАЯ ВСПЫШКА!
+		print("👻 💥 ОБРАТНАЯ ВСПЫШКА!")
+		var flash_back_tween = create_tween()
+		flash_back_tween.tween_property(flash_back, "color:a", 0.9, 0.1)
+		
+		# В момент пика вспышки меняем спрайты обратно
+		await get_tree().create_timer(0.05).timeout
+		phantom.modulate.a = 0.0  # Скрываем призрака
+		player_visual.visible = true
+		player_visual.modulate = original_player_modulate
+		player_visual.scale = original_player_scale
+		player_visual.self_modulate = Color(3.0, 3.0, 3.5, 1.0)  # Яркое свечение
+		
+		await flash_back_tween.finished
+		
+		# Вспышка спадает
+		var fade_back = create_tween()
+		fade_back.tween_property(flash_back, "color:a", 0.0, 0.2)
+		await fade_back.finished
+		
+		# Игрок постепенно теряет свечение и возвращается к норме
+		var normalize_tween = create_tween()
+		normalize_tween.tween_property(player_visual, "self_modulate", original_player_self_modulate, 0.3)
+		await normalize_tween.finished
+		
+		flash_back.queue_free()
+		print("👻 Герой вернулся в исходное состояние")
+	else:
+		# Если нет игрока, просто исчезаем через вспышку
+		var flash_back = ColorRect.new()
+		flash_back.color = Color(1, 1, 1, 0)
+		flash_back.z_index = 200
+		flash_back.position = Vector2(-2000, -2000)
+		flash_back.size = Vector2(4000, 4000)
+		
+		if game_world:
+			game_world.add_child(flash_back)
+		else:
+			add_child(flash_back)
+		
+		var glow_tween = create_tween()
+		glow_tween.tween_property(phantom, "self_modulate", Color(3.0, 3.5, 4.0, 1.0), 0.2)
+		await glow_tween.finished
+		
+		var flash_tween = create_tween()
+		flash_tween.tween_property(flash_back, "color:a", 0.9, 0.1)
+		await get_tree().create_timer(0.05).timeout
+		phantom.modulate.a = 0.0
+		await flash_tween.finished
+		
+		var fade_tween = create_tween()
+		fade_tween.tween_property(flash_back, "color:a", 0.0, 0.2)
+		await fade_tween.finished
+		
+		flash_back.queue_free()
 	
 	# Удаляем призрак
 	phantom.queue_free()
 	print("👻 Призрак удалён")
-	
-	# ПОКАЗЫВАЕМ ИГРОКА ОБРАТНО
-	if player_visual and player_was_visible:
-		player_visual.visible = true
-		print("👻 Визуал игрока восстановлен")
 	
 	print("👻 === КОНЕЦ ПРИЗРАЧНОЙ ТРАНСФОРМАЦИИ ===")
 
@@ -4894,6 +5101,51 @@ func get_next_enemy_for_turn() -> Node2D:
 			return enemy
 	
 	return null
+
+func _apply_learned_ability_effects(ability_result: Dictionary, target: Node2D, caster: Node2D) -> void:
+	"""Применяет дополнительные эффекты от изученных активных способностей врагов"""
+	
+	print("🔍 _apply_learned_ability_effects | target: %s | result: %s" % [target.display_name, ability_result])
+	
+	# Кровотечение (Крысиный укус, Рассекающий удар и т.д.)
+	if ability_result.get("apply_bleeding", false):
+		var bleed_damage = ability_result.get("bleed_damage", 5)
+		var source_id = caster.get_instance_id()
+		target.add_effect("bleeding", 3.0, 1, {"damage_per_turn": bleed_damage, "source_id": source_id})
+		battle_log.log_event("bleeding_applied", caster.display_name, target.display_name, bleed_damage, target.display_name + " начинает кровоточить! " + str(bleed_damage) + " урона за ход")
+		_show_message("🩸 " + target.display_name + " истекает кровью!", 1.5)
+		print("🩸 Наложено кровотечение: %d урона за ход" % bleed_damage)
+	
+	# Снижение брони (Кислотный взрыв, Удар брони и т.д.)
+	if ability_result.get("reduce_armor", 0) > 0:
+		var armor_reduction_value = ability_result.get("reduce_armor", 5)
+		print("🛡️ Применяем снижение брони на %d к %s" % [armor_reduction_value, target.display_name])
+		if target.has_method("reduce_armor"):
+			target.reduce_armor(armor_reduction_value)
+			print("🛡️ Вызван target.reduce_armor(%d) - эффект добавлен через add_effect в body.gd" % armor_reduction_value)
+		else:
+			target.armor_reduction += armor_reduction_value
+			print("🛡️ Прямое увеличение armor_reduction на %d" % armor_reduction_value)
+		battle_log.log_event("armor_reduced", caster.display_name, target.display_name, armor_reduction_value, "Броня " + target.display_name + " снижена на " + str(armor_reduction_value) + "! Общее снижение: " + str(target.armor_reduction))
+		_show_message("🛡️ Броня " + target.display_name + " ослаблена на " + str(armor_reduction_value) + "!", 1.5)
+		print("🛡️ Снижена броня на %d (общее снижение: %d)" % [armor_reduction_value, target.armor_reduction])
+	
+	# Оглушение (Пикирование, Сокрушающий удар и т.д.)
+	if ability_result.get("apply_stun", false):
+		var stun_duration = ability_result.get("stun_duration", 1)
+		target.add_effect("stun", stun_duration, 1, {})
+		battle_log.log_event("stun_applied", caster.display_name, target.display_name, stun_duration, target.display_name + " оглушён на " + str(stun_duration) + " ход!")
+		_show_message("💫 " + target.display_name + " оглушён!", 1.5)
+		print("💫 Наложено оглушение на %d ход(а)" % stun_duration)
+	
+	# Проклятие (Проклятый взрыв и т.д.)
+	if ability_result.get("apply_curse", false):
+		var curse_duration = ability_result.get("curse_duration", 3)
+		var curse_damage_reduction = ability_result.get("curse_damage_reduction", 0.3)
+		target.add_effect("curse", curse_duration, 1, {"damage_reduction": curse_damage_reduction})
+		battle_log.log_event("curse_applied", caster.display_name, target.display_name, int(curse_damage_reduction * 100), target.display_name + " проклят! Урон снижен на " + str(int(curse_damage_reduction * 100)) + "%")
+		_show_message("😈 " + target.display_name + " проклят!", 1.5)
+		print("😈 Наложено проклятие: урон -%d%%" % int(curse_damage_reduction * 100))
 
 func are_all_enemies_dead() -> bool:
 	"""Проверяет, все ли враги мертвы"""
