@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://spbfy403vyvy"]
+
+[ext_resource type="Script" uid="uid://b4131gr6a6ssw" path="res://Scripts/Battle/body.gd" id="1_1me3q"]
+[ext_resource type="Script" uid="uid://baajjson61nik" path="res://Scripts/Battle/character_visual.gd" id="2_vis"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_dylta"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"idle",
+"speed": 8.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kqfs2"]
+
+[node name="EnemyDragon" type="Node2D"]
+script = ExtResource("1_1me3q")
+display_name = "Dragon"
+max_hp = 200
+hp = 200
+attack_power = 50
+defense = 8
+rarity = "epic"
+
+[node name="Visual" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_dylta")
+animation = &"idle"
+script = ExtResource("2_vis")
+frames_resource = SubResource("SpriteFrames_kqfs2")

@@ -1,0 +1,423 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8x7y9z2a1b3c"]
+
+[ext_resource type="Script" path="res://Scripts/StatsScreen.gd" id="1_stats"]
+
+[node name="StatsScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_stats")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.1, 0.9)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -500.0
+offset_top = -570.0
+offset_right = 500.0
+offset_bottom = 600.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Характеристики"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LevelInfo" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LevelLabel" type="Label" parent="VBoxContainer/LevelInfo"]
+layout_mode = 2
+text = "Уровень: 1"
+
+[node name="ExpLabel" type="Label" parent="VBoxContainer/LevelInfo"]
+layout_mode = 2
+text = "Опыт: 0 / 2000"
+
+[node name="StatPointsLabel" type="Label" parent="VBoxContainer/LevelInfo"]
+layout_mode = 2
+text = "Свободных очков: 0"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="StatsContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Strength" type="HBoxContainer" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/StatsContainer/Strength"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Сила:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/StatsContainer/Strength"]
+layout_mode = 2
+text = "15"
+
+[node name="AddBtn" type="Button" parent="VBoxContainer/StatsContainer/Strength"]
+layout_mode = 2
+text = "+"
+
+[node name="Agility" type="HBoxContainer" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/StatsContainer/Agility"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Ловкость:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/StatsContainer/Agility"]
+layout_mode = 2
+text = "12"
+
+[node name="AddBtn" type="Button" parent="VBoxContainer/StatsContainer/Agility"]
+layout_mode = 2
+text = "+"
+
+[node name="Vitality" type="HBoxContainer" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/StatsContainer/Vitality"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Живучесть:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/StatsContainer/Vitality"]
+layout_mode = 2
+text = "14"
+
+[node name="AddBtn" type="Button" parent="VBoxContainer/StatsContainer/Vitality"]
+layout_mode = 2
+text = "+"
+
+[node name="Endurance" type="HBoxContainer" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/StatsContainer/Endurance"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Выносливость:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/StatsContainer/Endurance"]
+layout_mode = 2
+text = "13"
+
+[node name="AddBtn" type="Button" parent="VBoxContainer/StatsContainer/Endurance"]
+layout_mode = 2
+text = "+"
+
+[node name="Intelligence" type="HBoxContainer" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/StatsContainer/Intelligence"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Интеллект:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/StatsContainer/Intelligence"]
+layout_mode = 2
+text = "11"
+
+[node name="AddBtn" type="Button" parent="VBoxContainer/StatsContainer/Intelligence"]
+layout_mode = 2
+text = "+"
+
+[node name="Wisdom" type="HBoxContainer" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/StatsContainer/Wisdom"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Мудрость:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/StatsContainer/Wisdom"]
+layout_mode = 2
+text = "10"
+
+[node name="AddBtn" type="Button" parent="VBoxContainer/StatsContainer/Wisdom"]
+layout_mode = 2
+text = "+"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="DetailedStatsContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="DetailedStatsTitle" type="Label" parent="VBoxContainer/DetailedStatsContainer"]
+layout_mode = 2
+text = "Подробная статистика"
+horizontal_alignment = 1
+
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer/DetailedStatsContainer"]
+layout_mode = 2
+
+[node name="HealthStats" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/HealthStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Здоровье:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/HealthStats"]
+layout_mode = 2
+text = "100 / 100"
+
+[node name="ManaStats" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/ManaStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Мана:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/ManaStats"]
+layout_mode = 2
+text = "50 / 50"
+
+[node name="StaminaStats" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/StaminaStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Выносливость:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/StaminaStats"]
+layout_mode = 2
+text = "100 / 100"
+
+[node name="RegenStats" type="VBoxContainer" parent="VBoxContainer/DetailedStatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/RegenStats"]
+layout_mode = 2
+text = "Регенерация:"
+
+[node name="HPRegen" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/RegenStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/RegenStats/HPRegen"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  ОЗ:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/RegenStats/HPRegen"]
+layout_mode = 2
+text = "5/раунд"
+
+[node name="MPRegen" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/RegenStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/RegenStats/MPRegen"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  ОМ:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/RegenStats/MPRegen"]
+layout_mode = 2
+text = "3/раунд"
+
+[node name="SPRegen" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/RegenStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/RegenStats/SPRegen"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  ОВ:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/RegenStats/SPRegen"]
+layout_mode = 2
+text = "10/раунд"
+
+[node name="CombatStats" type="VBoxContainer" parent="VBoxContainer/DetailedStatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats"]
+layout_mode = 2
+text = "Боевые характеристики:"
+
+[node name="ActionPoints" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/CombatStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/ActionPoints"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Очки действий:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/ActionPoints"]
+layout_mode = 2
+text = "1"
+
+[node name="PhysicalDamage" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/CombatStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/PhysicalDamage"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Физ. урон:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/PhysicalDamage"]
+layout_mode = 2
+text = "+40"
+
+[node name="CritChance" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/CombatStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/CritChance"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Шанс крита:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/CritChance"]
+layout_mode = 2
+text = "5%"
+
+[node name="CritDamage" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/CombatStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/CritDamage"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Сила крита:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/CritDamage"]
+layout_mode = 2
+text = "150%"
+
+[node name="DodgeChance" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/CombatStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/DodgeChance"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Уворот:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/DodgeChance"]
+layout_mode = 2
+text = "5%"
+
+[node name="Accuracy" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/CombatStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/Accuracy"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Меткость:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/Accuracy"]
+layout_mode = 2
+text = "100%"
+
+[node name="Speed" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/CombatStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/Speed"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Скорость:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/CombatStats/Speed"]
+layout_mode = 2
+text = "0%"
+
+[node name="DefenseStats" type="VBoxContainer" parent="VBoxContainer/DetailedStatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/DefenseStats"]
+layout_mode = 2
+text = "Защита:"
+
+[node name="Armor" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/DefenseStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/DefenseStats/Armor"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Броня:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/DefenseStats/Armor"]
+layout_mode = 2
+text = "0"
+
+[node name="MagicResist" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/DefenseStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/DefenseStats/MagicResist"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Маг. защита:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/DefenseStats/MagicResist"]
+layout_mode = 2
+text = "0%"
+
+[node name="MagicStats" type="VBoxContainer" parent="VBoxContainer/DetailedStatsContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/MagicStats"]
+layout_mode = 2
+text = "Магия:"
+
+[node name="MagicDamage" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/MagicStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/MagicStats/MagicDamage"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Маг. урон:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/MagicStats/MagicDamage"]
+layout_mode = 2
+text = "+0%"
+
+[node name="MagicCritChance" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/MagicStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/MagicStats/MagicCritChance"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Маг. крит:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/MagicStats/MagicCritChance"]
+layout_mode = 2
+text = "5%"
+
+[node name="MagicCritDamage" type="HBoxContainer" parent="VBoxContainer/DetailedStatsContainer/MagicStats"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/DetailedStatsContainer/MagicStats/MagicCritDamage"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  Сила маг. крита:"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/DetailedStatsContainer/MagicStats/MagicCritDamage"]
+layout_mode = 2
+text = "150%"
+
+[node name="HSeparator4" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CloseBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Закрыть"

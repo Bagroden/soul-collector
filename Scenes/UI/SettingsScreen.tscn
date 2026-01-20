@@ -1,0 +1,171 @@
+[gd_scene load_steps=2 format=3 uid="uid://settings_screen"]
+
+[ext_resource type="Script" path="res://Scripts/UI/SettingsScreen.gd" id="1_settings"]
+
+[node name="SettingsScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_settings")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.1, 0.1, 0.2, 0.9)
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -200.0
+offset_right = 300.0
+offset_bottom = 200.0
+
+[node name="Title" type="Label" parent="MainContainer"]
+layout_mode = 2
+text = "НАСТРОЙКИ"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+
+[node name="DisplaySettings" type="VBoxContainer" parent="MainContainer"]
+layout_mode = 2
+
+[node name="DisplayTitle" type="Label" parent="MainContainer/DisplaySettings"]
+layout_mode = 2
+text = "Отображение индикаторов:"
+horizontal_alignment = 1
+
+[node name="HealthSetting" type="HBoxContainer" parent="MainContainer/DisplaySettings"]
+layout_mode = 2
+
+[node name="HealthLabel" type="Label" parent="MainContainer/DisplaySettings/HealthSetting"]
+layout_mode = 2
+text = "Здоровье:"
+size_flags_horizontal = 3
+
+[node name="HealthPercentage" type="CheckBox" parent="MainContainer/DisplaySettings/HealthSetting"]
+layout_mode = 2
+text = "Проценты"
+button_pressed = false
+
+[node name="HealthAbsolute" type="CheckBox" parent="MainContainer/DisplaySettings/HealthSetting"]
+layout_mode = 2
+text = "Абсолютные значения"
+button_pressed = true
+
+[node name="ManaSetting" type="HBoxContainer" parent="MainContainer/DisplaySettings"]
+layout_mode = 2
+
+[node name="ManaLabel" type="Label" parent="MainContainer/DisplaySettings/ManaSetting"]
+layout_mode = 2
+text = "Мана:"
+size_flags_horizontal = 3
+
+[node name="ManaPercentage" type="CheckBox" parent="MainContainer/DisplaySettings/ManaSetting"]
+layout_mode = 2
+text = "Проценты"
+button_pressed = false
+
+[node name="ManaAbsolute" type="CheckBox" parent="MainContainer/DisplaySettings/ManaSetting"]
+layout_mode = 2
+text = "Абсолютные значения"
+button_pressed = true
+
+[node name="StaminaSetting" type="HBoxContainer" parent="MainContainer/DisplaySettings"]
+layout_mode = 2
+
+[node name="StaminaLabel" type="Label" parent="MainContainer/DisplaySettings/StaminaSetting"]
+layout_mode = 2
+text = "Выносливость:"
+size_flags_horizontal = 3
+
+[node name="StaminaPercentage" type="CheckBox" parent="MainContainer/DisplaySettings/StaminaSetting"]
+layout_mode = 2
+text = "Проценты"
+button_pressed = false
+
+[node name="StaminaAbsolute" type="CheckBox" parent="MainContainer/DisplaySettings/StaminaSetting"]
+layout_mode = 2
+text = "Абсолютные значения"
+button_pressed = true
+
+[node name="HSeparator2" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+
+[node name="BattleLogSettings" type="VBoxContainer" parent="MainContainer"]
+layout_mode = 2
+
+[node name="BattleLogTitle" type="Label" parent="MainContainer/BattleLogSettings"]
+layout_mode = 2
+text = "Боевой лог:"
+horizontal_alignment = 1
+
+[node name="FailedAbilitiesSetting" type="HBoxContainer" parent="MainContainer/BattleLogSettings"]
+layout_mode = 2
+
+[node name="FailedAbilitiesLabel" type="Label" parent="MainContainer/BattleLogSettings/FailedAbilitiesSetting"]
+layout_mode = 2
+text = "Показывать несработавшие способности:"
+size_flags_horizontal = 3
+
+[node name="FailedAbilitiesCheckBox" type="CheckBox" parent="MainContainer/BattleLogSettings/FailedAbilitiesSetting"]
+layout_mode = 2
+text = "Включено"
+button_pressed = true
+
+[node name="HSeparator3" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+
+[node name="AudioSettings" type="VBoxContainer" parent="MainContainer"]
+layout_mode = 2
+
+[node name="AudioTitle" type="Label" parent="MainContainer/AudioSettings"]
+layout_mode = 2
+text = "Настройки звука:"
+horizontal_alignment = 1
+
+[node name="MusicVolumeSetting" type="HBoxContainer" parent="MainContainer/AudioSettings"]
+layout_mode = 2
+
+[node name="MusicVolumeLabel" type="Label" parent="MainContainer/AudioSettings/MusicVolumeSetting"]
+layout_mode = 2
+text = "Громкость музыки:"
+size_flags_horizontal = 3
+
+[node name="MusicVolumeSlider" type="HSlider" parent="MainContainer/AudioSettings/MusicVolumeSetting"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -80.0
+max_value = 0.0
+step = 1.0
+value = 0.0
+
+[node name="MusicVolumeValue" type="Label" parent="MainContainer/AudioSettings/MusicVolumeSetting"]
+layout_mode = 2
+text = "0%"
+custom_minimum_size = Vector2(40, 0)
+
+[node name="HSeparator4" type="HSeparator" parent="MainContainer"]
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="MainContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="BackButton" type="Button" parent="MainContainer/Buttons"]
+layout_mode = 2
+text = "НАЗАД"
+
+[node name="SaveButton" type="Button" parent="MainContainer/Buttons"]
+layout_mode = 2
+text = "СОХРАНИТЬ"

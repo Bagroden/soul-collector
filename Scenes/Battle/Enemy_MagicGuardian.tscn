@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://dfr7y1mtvjt85"]
+
+[ext_resource type="PackedScene" uid="uid://qp6r6p3fdxew" path="res://Scenes/Battle/Enemy_RottenSlime.tscn" id="1_base"]
+
+[sub_resource type="GDScript" id="GDScript_1"]
+script/source = "extends Node2D
+
+# Магический страж - тестовый враг с магическим барьером
+func _ready():
+	# Настраиваем характеристики
+	display_name = \"Магический страж\"
+	level = 8
+	max_hp = 200
+	hp = 200
+	attack_power = 25
+	strength = 12
+	agility = 8
+	vitality = 15
+	endurance = 10
+	intelligence = 20
+	wisdom = 18
+	
+	# Настраиваем пассивные способности
+	passive_abilities = []
+	ability_levels = {}
+	
+	# Добавляем магический барьер
+	var magic_barrier_ability = load(\"res://Scripts/PassiveAbilities/Rare/MagicBarrier.gd\").new()
+	passive_abilities.append(magic_barrier_ability)
+	ability_levels[\"magic_barrier\"] = 2  # 2 уровень = мудрость * 2.0
+	
+	# Применяем пассивные способности
+	for ability in passive_abilities:
+		_apply_passive_effects(ability)
+"
+
+[node name="Enemy_MagicGuardian" instance=ExtResource("1_base")]
+script = SubResource("GDScript_1")
+
+[node name="Visual2" type="Sprite2D" parent="." index="1"]
+position = Vector2(0, -50)
+scale = Vector2(2.5, 2.5)

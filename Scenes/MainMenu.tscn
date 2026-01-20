@@ -1,0 +1,102 @@
+[gd_scene load_steps=3 format=3 uid="uid://b8x7k2nan4p5q"]
+
+[ext_resource type="Script" uid="uid://bancyh4ti41hb" path="res://Scripts/MainMenu.gd" id="1_main_menu"]
+
+[sub_resource type="Theme" id="Theme_1"]
+default_font_size = 24
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.2, 1)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+offset_left = 514.545
+offset_top = 12.0
+offset_right = 1337.5458
+offset_bottom = 162.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.216, 0.996, 0.933, 0.9)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 96
+text = "SOUL COLLECTOR"
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+offset_left = 50.0
+offset_top = 325.0
+offset_right = 350.0
+offset_bottom = 675.0
+grow_horizontal = 0
+grow_vertical = 0
+theme = SubResource("Theme_1")
+
+[node name="Btn_NewGame" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Новая игра"
+
+[node name="Btn_Continue" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+disabled = true
+text = "Продолжить"
+
+[node name="Btn_Load" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Загрузить"
+
+[node name="Btn_Settings" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Настройки"
+
+[node name="Btn_Exit" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Выход"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="VersionLabel" type="Label" parent="."]
+layout_mode = 1
+offset_left = 1844.0
+offset_top = 1004.0
+offset_right = 1910.0
+offset_bottom = 1030.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "beta 0.6.11"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Btn_ReturnToBattle" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 50.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Вернуться в бой"
+visible = false

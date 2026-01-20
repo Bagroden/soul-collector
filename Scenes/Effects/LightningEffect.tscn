@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://c7mxp8k4j3vw2"]
+
+[ext_resource type="Script" uid="uid://btxmwd5cdrsdm" path="res://Scripts/Battle/LightningEffectAnimated.gd" id="1_script"]
+[ext_resource type="SpriteFrames" path="res://Assets/Sprites/Effects/Magic_Eff/2 Lightning bolt/LightningBolt_Frames.tres" id="2_frames"]
+
+[node name="LightningEffect" type="AnimatedSprite2D"]
+sprite_frames = ExtResource("2_frames")
+animation = &"lightning"
+script = ExtResource("1_script")
+fade_duration = 0.2
+scale_start = 1.0
+scale_end = 2.0
+sound_volume_db = 0.0
+sound_pitch = 1.0

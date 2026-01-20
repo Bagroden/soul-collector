@@ -1,0 +1,42 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Soul Collector"
+run/main_scene="uid://sx7csqr1pyvo"
+config/features=PackedStringArray("4.5", "Forward Plus")
+
+[autoload]
+
+LocationManager="*res://Scripts/LocationManagerAutoload.gd"
+PlayerManager="*res://Scripts/PlayerManager.gd"
+SoulShard="*res://Scripts/Currency/SoulShardManager.gd"
+StrongSouls="*res://Scripts/Currency/StrongSoulsManager.gd"
+GreatSouls="*res://Scripts/Currency/GreatSoulsManager.gd"
+DivineSouls="*res://Scripts/Currency/DivineSoulsManager.gd"
+AbilityLearningSystem="*res://Scripts/Systems/AbilityLearningSystem.gd"
+PassiveAbilityManager="*res://Scripts/PassiveAbilities/PassiveAbilityManager.gd"
+SoulRestorationManager="*res://Scripts/Systems/SoulRestorationManager.gd"
+MusicPlayer="*res://Scripts/MusicPlayer.gd"
+SoundManager="*res://Scripts/SoundManager.gd"
+SettingsManager="*res://Scripts/SettingsManager.gd"
+SceneTransition="*res://Scenes/UI/SceneTransition.tscn"
+IntroManager="*res://Scripts/IntroManager.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="viewport"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0

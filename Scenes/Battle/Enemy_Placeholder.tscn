@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://enemy_placeholder"]
+
+[ext_resource type="Script" path="res://Scripts/Battle/body.gd" id="1_body"]
+[ext_resource type="Script" path="res://Scripts/Battle/character_visual.gd" id="2_visual"]
+
+[node name="Placeholder" type="Node2D"]
+script = ExtResource("1_body")
+display_name = "Заглушка"
+max_hp = 50
+hp = 50
+attack_power = 15
+defense = 2
+strength = 10
+agility = 10
+vitality = 10
+endurance = 10
+intelligence = 10
+wisdom = 10
+
+[node name="Visual" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2, 2)
+script = ExtResource("2_visual")

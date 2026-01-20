@@ -1,0 +1,226 @@
+[gd_scene load_steps=32 format=3 uid="uid://bpkfqai0pmtlm"]
+
+[ext_resource type="Script" uid="uid://b4131gr6a6ssw" path="res://Scripts/Battle/body.gd" id="1_body"]
+[ext_resource type="Texture2D" uid="uid://o8nee3qkkq0k" path="res://Assets/Sprites/Goblins/StoneWizardGoblin/StoneWizardGoblin - attack.png" id="2_8whnr"]
+[ext_resource type="Script" uid="uid://baajjson61nik" path="res://Scripts/Battle/character_visual.gd" id="2_visual"]
+[ext_resource type="Texture2D" uid="uid://5cgr08c60l5d" path="res://Assets/Sprites/Goblins/StoneWizardGoblin/StoneWizardGoblin - death.png" id="3_5qgxb"]
+[ext_resource type="Texture2D" uid="uid://ba2gvovx7t265" path="res://Assets/Sprites/Goblins/StoneWizardGoblin/StoneWizardGoblin - hit(White).png" id="4_iwskt"]
+[ext_resource type="Texture2D" uid="uid://dtqcwrlkpxd4d" path="res://Assets/Sprites/Goblins/StoneWizardGoblin/StoneWizardGoblin - idle.png" id="5_c82re"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8whnr"]
+atlas = ExtResource("2_8whnr")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5qgxb"]
+atlas = ExtResource("2_8whnr")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cn8lc"]
+atlas = ExtResource("2_8whnr")
+region = Rect2(1920, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pibnd"]
+atlas = ExtResource("2_8whnr")
+region = Rect2(2048, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uwrvu"]
+atlas = ExtResource("2_8whnr")
+region = Rect2(2176, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kfqw1"]
+atlas = ExtResource("3_5qgxb")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4hl64"]
+atlas = ExtResource("3_5qgxb")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rmnq4"]
+atlas = ExtResource("3_5qgxb")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vsl5r"]
+atlas = ExtResource("3_5qgxb")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gnul1"]
+atlas = ExtResource("3_5qgxb")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7fpwm"]
+atlas = ExtResource("3_5qgxb")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_djc4c"]
+atlas = ExtResource("3_5qgxb")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2nuv6"]
+atlas = ExtResource("4_iwskt")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iasi3"]
+atlas = ExtResource("4_iwskt")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_87pw3"]
+atlas = ExtResource("4_iwskt")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1hci6"]
+atlas = ExtResource("4_iwskt")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_03d65"]
+atlas = ExtResource("5_c82re")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_emxfh"]
+atlas = ExtResource("5_c82re")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lo38u"]
+atlas = ExtResource("5_c82re")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kdmja"]
+atlas = ExtResource("5_c82re")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qf1kt"]
+atlas = ExtResource("5_c82re")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r7ktm"]
+atlas = ExtResource("5_c82re")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e832a"]
+atlas = ExtResource("5_c82re")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_viffh"]
+atlas = ExtResource("5_c82re")
+region = Rect2(896, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ev75d"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8whnr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5qgxb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cn8lc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pibnd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uwrvu")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kfqw1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4hl64")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rmnq4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vsl5r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gnul1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7fpwm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_djc4c")
+}],
+"loop": false,
+"name": &"die",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2nuv6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iasi3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_87pw3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1hci6")
+}],
+"loop": false,
+"name": &"hurt",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_03d65")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_emxfh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lo38u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kdmja")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qf1kt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r7ktm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e832a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_viffh")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[node name="Enemy_GoblinMage" type="Node2D"]
+script = ExtResource("1_body")
+display_name = "Гоблин колдун"
+level = 6
+max_hp = 120
+hp = 120
+max_mp = 100
+mp = 100
+max_stamina = 50
+stamina = 50
+attack_power = 15
+defense = 5
+strength = 8
+vitality = 12
+intelligence = 18
+wisdom = 16
+
+[node name="Visual" type="AnimatedSprite2D" parent="."]
+modulate = Color(0.3, 0.7, 1, 1)
+position = Vector2(0, 35)
+scale = Vector2(1.4, 1.4)
+sprite_frames = SubResource("SpriteFrames_ev75d")
+animation = &"attack"
+frame = 4
+frame_progress = 1.0
+script = ExtResource("2_visual")

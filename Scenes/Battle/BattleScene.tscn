@@ -1,0 +1,320 @@
+[gd_scene load_steps=10 format=3 uid="uid://dneq7ee2ng13w"]
+
+[ext_resource type="PackedScene" uid="uid://wa8ep5ej233g" path="res://Scenes/Battle/PlayerBody.tscn" id="1_jaxsk"]
+[ext_resource type="Script" uid="uid://ddxc77fdd7x0b" path="res://Scripts/Battle/ui_controller.gd" id="1_k6flv"]
+[ext_resource type="Script" uid="uid://ypfou6korxrf" path="res://Scripts/Battle/battle_manager.gd" id="3_mng"]
+[ext_resource type="Script" uid="uid://4eo1uo785ah2" path="res://Scripts/Battle/background.gd" id="4_bg"]
+[ext_resource type="Script" uid="uid://573ib0wo8ekn" path="res://Scripts/Battle/enemy_spawner.gd" id="5_spawner"]
+[ext_resource type="Script" uid="uid://dooubd654gmli" path="res://Scripts/UI/CustomProgressBar.gd" id="6_custom_bar"]
+[ext_resource type="Script" path="res://Scripts/Battle/camera_shake.gd" id="7_camera"]
+[ext_resource type="Texture2D" path="res://Assets/Icons/Skills/Strike.png" id="8_strike_icon"]
+[ext_resource type="Texture2D" path="res://Assets/Icons/Skills/Defend.png" id="9_defend_icon"]
+
+[node name="BattleScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_mng")
+
+[node name="GameWorld" type="Node2D" parent="."]
+
+[node name="Background" type="Sprite2D" parent="GameWorld"]
+z_index = -100
+script = ExtResource("4_bg")
+
+[node name="Camera2D" type="Camera2D" parent="GameWorld"]
+anchor_mode = 0
+script = ExtResource("7_camera")
+
+[node name="EnemySpawner" type="Node" parent="GameWorld"]
+script = ExtResource("5_spawner")
+
+[node name="PlayerBody" parent="GameWorld" instance=ExtResource("1_jaxsk")]
+
+[node name="EnemyContainer" type="Node2D" parent="GameWorld"]
+
+[node name="EnemySpot1" type="Marker2D" parent="GameWorld/EnemyContainer"]
+position = Vector2(1200, 680)
+
+[node name="EnemySpot2" type="Marker2D" parent="GameWorld/EnemyContainer"]
+position = Vector2(1400, 730)
+
+[node name="EnemySpot3" type="Marker2D" parent="GameWorld/EnemyContainer"]
+position = Vector2(1600, 680)
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_k6flv")
+
+[node name="HealthBars" type="Control" parent="UI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlayerHP" type="ProgressBar" parent="UI/HealthBars"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -180.0
+offset_right = 280.0
+offset_bottom = -160.0
+grow_vertical = 0
+step = 1.0
+script = ExtResource("6_custom_bar")
+
+[node name="PlayerMP" type="ProgressBar" parent="UI/HealthBars"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -140.0
+offset_right = 280.0
+offset_bottom = -120.0
+grow_vertical = 0
+step = 1.0
+script = ExtResource("6_custom_bar")
+
+[node name="PlayerStamina" type="ProgressBar" parent="UI/HealthBars"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -100.0
+offset_right = 280.0
+offset_bottom = -80.0
+grow_vertical = 0
+step = 1.0
+script = ExtResource("6_custom_bar")
+
+[node name="EnemyHP" type="ProgressBar" parent="UI/HealthBars"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -280.0
+offset_top = -180.0
+offset_right = -20.0
+offset_bottom = -160.0
+grow_horizontal = 0
+grow_vertical = 0
+step = 1.0
+fill_mode = 1
+script = ExtResource("6_custom_bar")
+
+[node name="EnemyMP" type="ProgressBar" parent="UI/HealthBars"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -280.0
+offset_top = -140.0
+offset_right = -20.0
+offset_bottom = -120.0
+grow_horizontal = 0
+grow_vertical = 0
+step = 1.0
+fill_mode = 1
+script = ExtResource("6_custom_bar")
+
+[node name="EnemyStamina" type="ProgressBar" parent="UI/HealthBars"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -280.0
+offset_top = -100.0
+offset_right = -20.0
+offset_bottom = -80.0
+grow_horizontal = 0
+grow_vertical = 0
+step = 1.0
+fill_mode = 1
+script = ExtResource("6_custom_bar")
+
+[node name="PlayerHUD" type="Control" parent="UI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -200.0
+offset_right = 300.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlayerName" type="Label" parent="UI/PlayerHUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 1068.625
+offset_bottom = 1091.6251
+grow_horizontal = 2
+
+[node name="EnemyHUD" type="Control" parent="UI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -350.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="EnemyAbilities" type="Label" parent="UI/EnemyHUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1938.675
+offset_top = 1085.59
+offset_right = -1.3249512
+offset_bottom = 1108.59
+grow_horizontal = 2
+
+[node name="EnemyPassivesBtn" type="Button" parent="UI/EnemyHUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1937.68
+offset_top = 1154.305
+offset_right = -2.319336
+offset_bottom = 1185.305
+grow_horizontal = 2
+text = "Умения врага"
+
+[node name="EnemyRarity" type="Label" parent="UI/EnemyHUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1937.63
+offset_top = 1186.34
+offset_right = -162.37
+offset_bottom = 1209.3401
+grow_horizontal = 2
+
+[node name="EnemyName" type="Label" parent="UI/EnemyHUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1938.85
+offset_top = 1213.595
+offset_right = -161.15002
+offset_bottom = 1237.595
+grow_horizontal = 2
+
+[node name="Actions" type="Control" parent="UI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -80.0
+offset_right = 100.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Btn_Attack" type="Button" parent="UI/Actions"]
+layout_mode = 1
+offset_left = -187.14
+offset_top = -144.035
+offset_right = -87.14
+offset_bottom = -84.035
+icon = ExtResource("8_strike_icon")
+text = "Атака"
+
+[node name="Btn_Defend" type="Button" parent="UI/Actions"]
+layout_mode = 1
+offset_left = -62.14
+offset_top = -144.035
+offset_right = 37.86
+offset_bottom = -84.035
+icon = ExtResource("9_defend_icon")
+text = "Защита"
+
+[node name="Btn_BattleLog" type="Button" parent="UI/Actions"]
+layout_mode = 1
+offset_left = 60.515
+offset_right = 130.515
+offset_bottom = 31.000011
+text = "Лог боя"
+
+[node name="Btn_Passives" type="Button" parent="UI/Actions"]
+layout_mode = 1
+offset_left = -835.765
+offset_top = -200.23
+offset_right = -555.765
+offset_bottom = -169.23
+text = "Умения"
+
+[node name="MessageLog" type="Label" parent="UI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -120.0
+offset_right = 200.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RunSoulShardsIndicator" type="Control" parent="UI"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = 20.0
+offset_right = 150.0
+offset_bottom = 80.0
+grow_horizontal = 2
+
+[node name="Background" type="ColorRect" parent="UI/RunSoulShardsIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="SoulShardsLabel" type="Label" parent="UI/RunSoulShardsIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Осколки за забег: 0"
+horizontal_alignment = 1
+vertical_alignment = 1

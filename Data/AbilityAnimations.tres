@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="AbilityAnimationData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Battle/AbilityAnimationData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+ability_animations = {
+"rat_bite": "rat_bite_anim",
+"bat_swoop": "bat_swoop_anim",
+"acid_blast": "acid_blast_anim",
+"poison_strike": "poison_strike_anim",
+"double_strike": "double_strike_anim",
+"crossbow_shot": "crossbow_shot_anim",
+"slashing_strike": "slashing_strike_anim",
+"rending_claws": "rending_claws_anim",
+"crushing_hammer": "crushing_hammer_anim",
+"tombstone": "tombstone_anim",
+"shadow_spikes": "shadow_spikes_anim",
+"spiritual_strike": "spiritual_strike_anim",
+"tharnok_crushing_strike": "attack_alt"
+}

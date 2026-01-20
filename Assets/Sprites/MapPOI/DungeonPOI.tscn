@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://chlxrnvhf5xja"]
+
+[ext_resource type="SpriteFrames" uid="uid://ipfa2p0q6rf0" path="res://Assets/Sprites/MapPOI/DarkForestPOI.tres" id="1_qfoul"]
+
+[node name="DungeonPoi" type="Node2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = ExtResource("1_qfoul")
+animation = &"idle"

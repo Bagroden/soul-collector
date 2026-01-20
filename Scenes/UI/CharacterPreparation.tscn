@@ -1,0 +1,242 @@
+[gd_scene load_steps=3 format=3 uid="uid://b0rvkijyq6fr0"]
+
+[ext_resource type="Script" uid="uid://df1mxrur6lrbp" path="res://Scripts/UI/CharacterPreparation.gd" id="1_1me3q"]
+[ext_resource type="Texture2D" uid="uid://d2dkeahn85hm8" path="res://Assets/PreparationMenu.png" id="2_background"]
+
+[node name="CharacterPreparation" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1me3q")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_background")
+stretch_mode = 6
+
+[node name="Overlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.3)
+
+[node name="SoulShardStorageIndicator" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 80.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Background" type="ColorRect" parent="SoulShardStorageIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="SoulShardsLabel" type="Label" parent="SoulShardStorageIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Колодец душ: 0"
+horizontal_alignment = 1
+
+[node name="StrongSoulsIndicator" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
+offset_top = 90.0
+offset_right = -20.0
+offset_bottom = 150.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Background" type="ColorRect" parent="StrongSoulsIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="StrongSoulsLabel" type="Label" parent="StrongSoulsIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Сильные души: 0"
+horizontal_alignment = 1
+
+[node name="GreatSoulsIndicator" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
+offset_top = 160.0
+offset_right = -20.0
+offset_bottom = 220.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Background" type="ColorRect" parent="GreatSoulsIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="GreatSoulsLabel" type="Label" parent="GreatSoulsIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Великие души: 0"
+horizontal_alignment = 1
+
+[node name="DivineSoulsIndicator" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -250.0
+offset_top = 230.0
+offset_right = -20.0
+offset_bottom = 290.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Background" type="ColorRect" parent="DivineSoulsIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="DivineSoulsLabel" type="Label" parent="DivineSoulsIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Божественные души: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1.0, 0.8, 0.0, 1.0)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+
+[node name="TitleContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -550.0
+offset_right = 400.0
+offset_bottom = -450.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Title" type="Label" parent="TitleContainer"]
+layout_mode = 2
+text = "ПОДГОТОВКА К ПУТЕШЕСТВИЮ"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitle" type="Label" parent="TitleContainer"]
+layout_mode = 2
+text = "Настройте своего персонажа перед началом приключения"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MainContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -550.0
+offset_top = -50.0
+offset_right = 550.0
+offset_bottom = 550.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="ActionContainer" type="Control" parent="MainContainer"]
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="MainContainer/ActionContainer"]
+layout_mode = 1
+offset_left = -200.455
+offset_top = 37.14
+offset_right = -50.455
+offset_bottom = 77.13997
+text = "НАЗАД"
+
+[node name="StartJourneyButton" type="Button" parent="MainContainer/ActionContainer"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -175.0
+offset_top = 51.74
+offset_right = 175.0
+offset_bottom = 131.74
+grow_horizontal = 2
+text = "ОТПРАВИТЬСЯ В ПУТЕШЕСТВИЕ"
+
+[node name="ResetStatsButton" type="Button" parent="MainContainer/ActionContainer"]
+layout_mode = 1
+offset_left = 143.225
+offset_top = 100.0
+offset_right = 343.2249
+offset_bottom = 140.0
+text = "СБРОС ХАРАКТЕРИСТИК"
+
+[node name="DistributeStatsButton" type="Button" parent="MainContainer/ActionContainer"]
+layout_mode = 1
+offset_left = 450.05
+offset_top = 100.0
+offset_right = 734.05066
+offset_bottom = 140.00006
+text = "РАСПРЕДЕЛИТЬ ХАРАКТЕРИСТИКИ"

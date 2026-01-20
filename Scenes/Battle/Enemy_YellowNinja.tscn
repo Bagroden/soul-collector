@@ -1,0 +1,92 @@
+[gd_scene load_steps=13 format=3 uid="uid://pyqi8cxkrtua"]
+
+[ext_resource type="Script" uid="uid://b4131gr6a6ssw" path="res://Scripts/Battle/body.gd" id="1_1me3q"]
+[ext_resource type="Texture2D" uid="uid://croienv7fp8vw" path="res://Assets/Sprites/yellowNinja - idle.png" id="2_3j5ec"]
+[ext_resource type="Script" uid="uid://baajjson61nik" path="res://Scripts/Battle/character_visual.gd" id="2_vis"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f1s7s"]
+atlas = ExtResource("2_3j5ec")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t4tsn"]
+atlas = ExtResource("2_3j5ec")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q4u6b"]
+atlas = ExtResource("2_3j5ec")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d4w8f"]
+atlas = ExtResource("2_3j5ec")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v4ac2"]
+atlas = ExtResource("2_3j5ec")
+region = Rect2(512, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8fs0r"]
+atlas = ExtResource("2_3j5ec")
+region = Rect2(640, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yopxi"]
+atlas = ExtResource("2_3j5ec")
+region = Rect2(768, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x6pcl"]
+atlas = ExtResource("2_3j5ec")
+region = Rect2(896, 0, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_adq7s"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f1s7s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t4tsn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q4u6b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d4w8f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v4ac2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8fs0r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yopxi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x6pcl")
+}],
+"loop": true,
+"name": &"default",
+"speed": 8.0
+}]
+
+[node name="EnemyDragon" type="Node2D"]
+script = ExtResource("1_1me3q")
+display_name = "YellowNinja"
+max_hp = 200
+hp = 200
+max_mp = 60
+mp = 60
+attack_power = 50
+defense = 8
+rarity = "epic"
+strength = 22
+agility = 25
+vitality = 20
+endurance = 18
+intelligence = 15
+wisdom = 12
+
+[node name="Visual" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_adq7s")
+flip_h = true
+script = ExtResource("2_vis")

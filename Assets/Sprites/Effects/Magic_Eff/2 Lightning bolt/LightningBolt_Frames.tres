@@ -1,0 +1,81 @@
+[gd_resource type="SpriteFrames" load_steps=12 format=3 uid="uid://dl27x8i07bs8l"]
+
+[ext_resource type="Texture2D" uid="uid://3edygwmd2q16" path="res://Assets/Sprites/Effects/Magic_Eff/2 Lightning bolt/Lightning-bolt.png" id="1_lightning"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vbbbr"]
+atlas = ExtResource("1_lightning")
+region = Rect2(0, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dloum"]
+atlas = ExtResource("1_lightning")
+region = Rect2(72, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tf1mj"]
+atlas = ExtResource("1_lightning")
+region = Rect2(144, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nc03l"]
+atlas = ExtResource("1_lightning")
+region = Rect2(216, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cb72r"]
+atlas = ExtResource("1_lightning")
+region = Rect2(288, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y4xmf"]
+atlas = ExtResource("1_lightning")
+region = Rect2(360, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6s777"]
+atlas = ExtResource("1_lightning")
+region = Rect2(432, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0dmnj"]
+atlas = ExtResource("1_lightning")
+region = Rect2(504, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5w6dy"]
+atlas = ExtResource("1_lightning")
+region = Rect2(576, 0, 72, 72)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7k20g"]
+atlas = ExtResource("1_lightning")
+region = Rect2(648, 0, 72, 72)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vbbbr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dloum")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tf1mj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nc03l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cb72r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y4xmf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6s777")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0dmnj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5w6dy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7k20g")
+}],
+"loop": false,
+"name": &"lightning",
+"speed": 12.0
+}]
