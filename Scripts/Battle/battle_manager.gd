@@ -4293,8 +4293,9 @@ func _create_phantom_sprite(sprite_frames: SpriteFrames, ability_name: String) -
 	phantom.name = "PhantomEnemy"
 	phantom.sprite_frames = sprite_frames
 	phantom.z_index = 150  # Поверх игрока
-	phantom.scale = Vector2(3.0, 3.0)  # Такой же размер как враги
-	phantom.modulate = Color(1, 1, 1, 0.7)  # Полупрозрачный (немного ярче)
+	phantom.scale = Vector2(3.6, 3.6)  # На 20% больше врагов (3.0 * 1.2 = 3.6)
+	# Призрачный эффект: голубовато-белый цвет с прозрачностью
+	phantom.modulate = Color(0.7, 0.9, 1.0, 0.65)  # Cyan-ish призрачный оттенок
 	
 	# Позиционируем на месте игрока
 	phantom.global_position = player_node.global_position
